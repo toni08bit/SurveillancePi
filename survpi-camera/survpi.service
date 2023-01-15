@@ -1,0 +1,14 @@
+[Unit]
+Description = (github/BillPlayzToday/SurveillancePi) Camera Service
+After = syslog.target network.target
+
+[Service]
+User = root
+WorkingDirectory = /home/survpi-camera
+Environment = "PATH=/home/survpi-camera/.env/bin"
+ExecStart = /home/survpi-camera/.env/bin/python3.11 /home/survpi-camera/main.py
+Restart = always
+RestartSec = 2
+
+[Install]
+WantedBy = multi-user.target

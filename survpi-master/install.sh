@@ -1,0 +1,1 @@
+mv -f /home/survpi-master/survpi.service /etc/systemd/system/

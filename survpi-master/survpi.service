@@ -1,0 +1,15 @@
+[Unit]
+Description = (github/BillPlayzToday/SurveillancePi) Camera MASTER Service
+After = syslog.target network.target
+
+[Service]
+User = root
+Group = www-data
+WorkingDirectory = /home/survpi-master
+Environment = "PATH=/home/survpi-master/.env/bin"
+ExecStart = /home/survpi-master/.env/bin/uwsgi --ini server.ini
+Restart = always
+RestartSec = 2
+
+[Install]
+WantedBy = multi-user.target

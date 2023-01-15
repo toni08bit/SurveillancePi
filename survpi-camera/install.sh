@@ -1,0 +1,1 @@
+mv -f /home/survpi-camera/survpi.service /etc/systemd/system/

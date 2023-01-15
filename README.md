@@ -1,15 +1,15 @@
 # Surveillance Pi
 ## What's this?
-This project is dedicated for a CCTV system using Raspberry Pis with a [Raspberry Pi Camera Module (v2.1)](https://thepihut.com/products/raspberry-pi-camera-module)
+This project is dedicated for a CCTV system using Raspberry Pi(s) with a [Raspberry Pi Camera Module](https://thepihut.com/products/raspberry-pi-camera-module-3)
 ## Requirements
-### Storage Pi
-- Raspberry Pi (3B+ or 4B)
+### Storage/Master Pi
+- Raspberry Pi
 - WiFi/LAN Connection
 - (Maybe?) External Storage Device (because we don't want to overwhelm the system SD card with high traffic)
 ### Camera Pi (Indefinitely repeatable)
-- Raspberry Pi (3B+ or 4B)
+- Raspberry Pi (with CAM port)
 - WiFi/LAN Connection
-- Camera Module v2.1 ([PiHut](https://thepihut.com/products/raspberry-pi-camera-module)) - Possible to use old modules, apply filter "greyworld" for relatively fine color quality, if you don't care about green looking pink (trees be looking funny)
+- Camera Module ([PiHut](https://thepihut.com/products/raspberry-pi-camera-module-3)) - Possible to use old modules, apply filter "greyworld" for relatively fine color quality, if you don't care about green being replaced with pink (trees be looking funny)
 ## How to install
 Copy the applicable code to */home/SurveillancePi*.
 Move the .service file to */etc/systemd/system* and enable it.
