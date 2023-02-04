@@ -27,6 +27,7 @@ cd survpi-camera
 echo "Installing..."
 mv -f ./survpi.service /etc/systemd/system/
 mv -f ./uninstall.sh /home/pi/SurveillancePi/
+chmod 777 /home/pi/SurveillancePi/uninstall.sh
 python3 -m venv .env
 exit
 echo "Starting service..."
