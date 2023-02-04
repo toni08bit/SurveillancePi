@@ -3,6 +3,11 @@ if [ "$EUID" != "0" ]
     exit
 fi
 
+if [ "$PWD" != "/home/pi" ]
+    then echo "Please run the install script inside the /home/pi folder."
+    exit
+fi
+
 echo "Updating packages..."
 apt update
 apt upgrade -y
@@ -21,6 +26,7 @@ cd survpi-camera
 
 echo "Installing..."
 mv -f ./survpi.service /etc/systemd/system/
+mv -f ./uninstall.sh /home/pi/SurveillancePi/
 python3 -m venv .env
 exit
 echo "Starting service..."
