@@ -10,7 +10,18 @@ apt upgrade -y
 echo "Installing git, if not installed."
 apt install git -y
 
+echo "Installing required packages."
+apt install python3-venv -y
+
 echo "Cloning camera directory."
 git clone --depth 1 --filter=blob:none --sparse https://github.com/BillPlayzToday/SurveillancePi
 cd SurveillancePi
 git sparse-checkout set survpi-camera
+cd survpi-camera
+
+echo "Installing..."
+mv -f ./survpi.service /etc/systemd/system/
+python3 -m venv .env
+exit
+echo "Starting service..."
+systemd enable survpi
