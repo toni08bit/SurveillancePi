@@ -40,10 +40,12 @@ def connectSocket(address):
     newSocket.connect(address)
     return newSocket
 
-
+print("INFO - Locating master socket...")
 masterSocketAddress = locateMasterSocket()
+print("INFO - Connecting to master socket...")
 masterSocket = connectSocket(masterSocketAddress)
 
+print("INFO - Beginning stream cycle.")
 while True:
     cameraProcess = createLocalStream()
     vlcProcess = createLocalReceiver()
