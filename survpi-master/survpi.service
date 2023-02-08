@@ -1,13 +1,12 @@
 [Unit]
-Description = (github/BillPlayzToday/SurveillancePi) Camera MASTER Service
+Description = (github/BillPlayzToday/SurveillancePi) Master Service
 After = syslog.target network.target
 
 [Service]
 User = root
-Group = www-data
-WorkingDirectory = /home/survpi-master
-Environment = "PATH=/home/survpi-master/.env/bin"
-ExecStart = /home/survpi-master/.env/bin/uwsgi --ini server.ini
+WorkingDirectory = /home/pi/SurveillancePi/survpi-master
+Environment = "PATH=/home/pi/SurveillancePi/survpi-master/.env/bin"
+ExecStart = /home/pi/SurveillancePi/survpi-master/.env/bin/python3.9 /home/pi/SurveillancePi/survpi-master/main.py
 Restart = always
 RestartSec = 2
 

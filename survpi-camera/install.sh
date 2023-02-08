@@ -1,10 +1,10 @@
-if [ "$EUID" != "0" ]
-    then echo "Please run the install script as root or sudo."
+if [ "$EUID" != "0" ] then
+    echo "Please run the install script as root or sudo."
     exit
 fi
 
-if [ "$PWD" != "/home/pi" ]
-    then echo "Please run the install script inside the /home/pi folder."
+if [ "$PWD" != "/home/pi" ] then
+    echo "Please run the install script inside the /home/pi folder."
     exit
 fi
 
@@ -29,6 +29,7 @@ mv -f ./survpi.service /etc/systemd/system/
 mv -f ./uninstall.sh /home/pi/SurveillancePi/
 chmod 777 /home/pi/SurveillancePi/uninstall.sh
 python3 -m venv .env
-exit
+
 echo "Starting service..."
 systemd enable survpi
+systemd start survpi
