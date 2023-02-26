@@ -29,7 +29,9 @@ cd survpi-master
 echo "Installing..."
 mv -f ./survpi.service /etc/systemd/system/
 mv -f ./uninstall.sh /home/pi/SurveillancePi/
+mv -f ./reinstall.sh /home/pi/SurveillancePi
 chmod 777 /home/pi/SurveillancePi/uninstall.sh
+chmod 777 /home/pi/SurveillancePi/reinstall.sh
 python3 -m venv .env
 
 echo "Starting service..."
