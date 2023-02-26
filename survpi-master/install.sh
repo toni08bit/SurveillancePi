@@ -1,9 +1,11 @@
-if [ "$EUID" != "0" ] then
+if [ "$EUID" != "0" ]
+then
     echo "Please run the install script as root or sudo."
     exit
 fi
 
-if [ "$PWD" != "/home/pi" ] then
+if [ "$PWD" != "/home/pi" ]
+then
     echo "Please run the install script inside the /home/pi folder."
     exit
 fi

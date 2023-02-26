@@ -1,4 +1,5 @@
-if [ "$PWD" != "/home/pi/SurveillancePi" ] then
+if [ "$PWD" != "/home/pi/SurveillancePi" ]
+then
     echo "Please run the install script inside the /home/pi/SurveillancePi folder."
     exit
 fi
