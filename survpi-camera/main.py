@@ -28,7 +28,7 @@ def createLocalReceiver(outputPath):
     ])
 
 def locateMasterSocket():
-    udpSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    udpSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
     udpSocket.bind(("0.0.0.0",8887))
     while True:
         data,originAddress = udpSocket.recvfrom(1024)
