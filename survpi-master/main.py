@@ -15,7 +15,8 @@ def broadcastThread():
     try:
         while True:
             udpSocket.sendto(b"survpi-master!ready-recv",("",8887))
-            time.sleep(10)
+            time.sleep(3)
+            print("sent ping")
     except KeyboardInterrupt:
         udpSocket.close()
         print("Closed UDP socket")
