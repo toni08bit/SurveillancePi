@@ -26,5 +26,5 @@ if (__name__ == "__main__"):
     )
     udpBroadcaster.start()
 
-    tcpServer = socketserver.TCPServer(("0.0.0.0",8888),SocketHandler)
+    tcpServer = socketserver.TCPServer(("255.255.255.255",8888),SocketHandler)
     tcpServer.serve_forever()
