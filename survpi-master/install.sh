@@ -33,5 +33,5 @@ chmod 777 /home/pi/SurveillancePi/uninstall.sh
 python3 -m venv .env
 
 echo "Starting service..."
-systemd enable survpi
-systemd start survpi
+systemctl enable survpi
+systemctl start survpi
