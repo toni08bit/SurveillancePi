@@ -1,6 +1,5 @@
 import socketserver
 import socket
-import sys
 import json
 import multiprocessing
 import time
@@ -10,18 +9,20 @@ pendingData = {}
 
 class SocketHandler(socketserver.StreamRequestHandler):
     def handle(self):
-        sys.stdout.write(f"[{self.client_address}] Blocking...")
-        self.data = self.request.recv(2048)
-        if (self.data == b"survpi-camera!ready-send"):
-            print(f"[{self.client_address}] Ready.")
-            pendingData[self.client_address] = b""
-        else:
-            if (not pendingData.get(self.client_address)):
-                print(f"[{self.client_address}] Closing, no entry.")
-                self.connection.close()
-                return
-            print(f"[{self.client_address}] Appending {str(len(self.data))} bytes.")
-            pendingData[self.client_address] = pendingData[self.client_address] + self.data
+        while True:
+            self.connection
+            print(f"[{self.client_address}] Blocking...")
+            self.data = self.request.recv(2048)
+            if (self.data == b"survpi-camera!ready-send"):
+                print(f"[{self.client_address}] Ready.")
+                pendingData[self.client_address] = b""
+            else:
+                if (not pendingData.get(self.client_address)):
+                    print(f"[{self.client_address}] Closing, no entry.")
+                    self.connection.close()
+                    return
+                print(f"[{self.client_address}] Appending {str(len(self.data))} bytes.")
+                pendingData[self.client_address] = pendingData[self.client_address] + self.data
     
     def finish(self):
         if (not pendingData.get(self.client_address)):
@@ -29,6 +30,8 @@ class SocketHandler(socketserver.StreamRequestHandler):
             return
         print(f"[{self.client_address}] Disconnected with {str(len(pendingData[self.client_address]))} bytes.")
 
+def handleClient(connection,address):
+    pass
 
 def getConfigData():
     openFile = open(configFile)
@@ -59,5 +62,14 @@ if (__name__ == "__main__"):
     )
     udpBroadcaster.start()
 
-    tcpServer = socketserver.TCPServer(("0.0.0.0",8888),SocketHandler)
-    tcpServer.serve_forever()
+    tcpServer = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    tcpServer.bind(("0.0.0.0",8888))
+    tcpServer.setblocking(False)
+    tcpServer.listen(5)
+    while True:
+        try:
+            print("blocking...")
+            connection,address = tcpServer.accept()
+            print("didnt raise!!!")
+        except socket.error:
+            print("raised error")
