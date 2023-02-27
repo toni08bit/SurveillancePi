@@ -10,7 +10,7 @@ pendingData = {}
 class SocketHandler(socketserver.StreamRequestHandler):
     def handle(self):
         print(f"[{self.client_address}] Blocking...")
-        self.data = self.request.recv()
+        self.data = self.request.recv(2048)
         if (self.data == b"survpi-camera!ready-send"):
             print(f"[{self.client_address}] Ready.")
             pendingData[self.client_address] = b""
