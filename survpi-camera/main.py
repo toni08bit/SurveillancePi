@@ -53,7 +53,7 @@ while True:
 
     lastFileLength = 0
     os.remove("/home/pi/survpi-output/current.h264")
-    masterSocket.send(b"")
+    masterSocket.sendall(b"survpi-camera!ready-send")
     while True:
         currentTime = time.time()
         if (currentTime - streamStart >= 1200):
