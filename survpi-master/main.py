@@ -30,6 +30,13 @@ class SocketHandler(socketserver.StreamRequestHandler):
             return
         print(f"[{self.client_address}] Disconnected with {str(len(pendingData[self.client_address]))} bytes.")
 
+class AcceptedConnection:
+    def __init__(self,connection,address):
+        self.pendingData = b""
+        self.status = None
+        self.connection = connection
+        self.address = address
+
 def handleClient(connection,address):
     pass
 
@@ -62,14 +69,19 @@ if (__name__ == "__main__"):
     )
     udpBroadcaster.start()
 
+    tcpConnections = []
     tcpServer = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     tcpServer.bind(("0.0.0.0",8888))
     tcpServer.setblocking(False)
     tcpServer.listen(5)
     while True:
         try:
-            print("blocking...")
             connection,address = tcpServer.accept()
-            print("didnt raise!!!")
-        except socket.error:
-            print("raised error")
+            tcpConnections.append(AcceptedConnection(connection,address))
+            print(f"[{address}] Accepted.")
+        except BlockingIOError:
+            pass
+
+        for connectedClient in tcpConnections:
+            receivedData = connectedClient.recv(4096)
+            print(len(receivedData))
