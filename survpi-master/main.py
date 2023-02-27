@@ -4,7 +4,7 @@ import json
 import multiprocessing
 import time
 
-configFile = "/home/SurveillancePi/survpi-master/config.json"
+configFile = "/home/pi/SurveillancePi/survpi-master/config.json"
 
 class SocketHandler(socketserver.StreamRequestHandler):
     def handle(self):

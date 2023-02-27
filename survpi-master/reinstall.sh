@@ -9,7 +9,7 @@ echo "Running uninstall script..."
 
 echo "Downloading install script..."
 cd /home/pi/
-wget https://raw.githubusercontent.com/BillPlayzToday/SurveillancePi/main/survpi-master/install.sh
+wget https://raw.githubusercontent.com/BillPlayzToday/SurveillancePi/main/survpi-master/install.sh -O install.sh
 chmod 777 install.sh
 
 echo "Running install script..."
