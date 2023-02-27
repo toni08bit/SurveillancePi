@@ -83,5 +83,7 @@ if (__name__ == "__main__"):
             pass
 
         for connectedClient in tcpConnections:
+            print("blocking...")
             receivedData = connectedClient.connection.recv(4096)
             print(len(receivedData))
+        print("finished loop.")
