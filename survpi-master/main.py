@@ -1,5 +1,6 @@
 import socketserver
 import socket
+import sys
 import json
 import multiprocessing
 import time
@@ -9,7 +10,7 @@ pendingData = {}
 
 class SocketHandler(socketserver.StreamRequestHandler):
     def handle(self):
-        print(f"[{self.client_address}] Blocking...")
+        sys.stdout.write(f"[{self.client_address}] Blocking...")
         self.data = self.request.recv(2048)
         if (self.data == b"survpi-camera!ready-send"):
             print(f"[{self.client_address}] Ready.")
@@ -52,6 +53,7 @@ def broadcastThread():
         udpSocket.close()
 
 if (__name__ == "__main__"):
+    print("[MAIN] Starting Threads and Sockets.")
     udpBroadcaster = multiprocessing.Process(
         target = broadcastThread
     )
