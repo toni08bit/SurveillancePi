@@ -83,5 +83,5 @@ if (__name__ == "__main__"):
             pass
 
         for connectedClient in tcpConnections:
-            receivedData = connectedClient.recv(4096)
+            receivedData = connectedClient.connection.recv(4096)
             print(len(receivedData))
