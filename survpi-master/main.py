@@ -54,7 +54,7 @@ def workConnections():
                 print(f"[{connectedClient.address[0]}] Saved {str(len(pendingData[connectedClient.address]))} bytes.")
                 pendingData[connectedClient.address] = None
             else:
-                if (pendingData.get(connectedClient.address) != None):
+                if (pendingData.get(connectedClient.address) == None):
                     print(f"[{connectedClient.address[0]}] Closing, no entry.")
                     connectedClient.connection.close()
                     tcpConnections.remove(connectedClient)

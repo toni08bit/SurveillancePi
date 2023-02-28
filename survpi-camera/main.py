@@ -53,7 +53,7 @@ while True:
 
     lastFileLength = 0
     os.remove("/home/pi/survpi-output/current.h264")
-    masterSocket.sendall(b"survpi-camera!ready-send")
+    masterSocket.send(b"survpi-camera!ready-send")
     while True:
         currentTime = time.time()
         if (currentTime - streamStart >= 1200):
@@ -78,7 +78,7 @@ while True:
             currentFile.seek(lastFileLength)
             newData = currentFile.read(currentFileLength - lastFileLength)
 
-            masterSocket.sendall(newData)
+            masterSocket.send(newData)
 
             lastFileLength = currentFileLength
 
