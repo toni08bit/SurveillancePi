@@ -107,6 +107,8 @@ if (__name__ == "__main__"):
             except BlockingIOError:
                 pass
 
+            workConnections()
+
             
     except KeyboardInterrupt:
         udpBroadcaster.terminate()
