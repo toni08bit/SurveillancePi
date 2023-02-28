@@ -45,7 +45,7 @@ def workConnections():
             receivedData = connectedClient.connection.recv(4096)
             if (receivedData == b"survpi-camera!reset-cache"):
                 pendingData[connectedClient.address] = b""
-                print(f"[{connectedClient.address[0]}] Ready.")
+                print(f"[{connectedClient.address[0]}] Reset.")
             elif (not receivedData):
                 connectedClient.connection.close()
                 tcpConnections.remove(connectedClient)
@@ -54,8 +54,7 @@ def workConnections():
                 print(f"[{connectedClient.address[0]}] Saved {str(len(pendingData[connectedClient.address]))} bytes.")
                 pendingData[connectedClient.address] = None
             else:
-                if (not pendingData.get(connectedClient.address)):
-                    print(pendingData)
+                if (pendingData.get(connectedClient.address) != None):
                     print(f"[{connectedClient.address[0]}] Closing, no entry.")
                     connectedClient.connection.close()
                     tcpConnections.remove(connectedClient)
