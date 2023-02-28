@@ -4,9 +4,7 @@ import time
 import socket
 import base64
 
-
 streamStart = -1
-
 
 def createLocalStream():
     return subprocess.Popen([
@@ -47,13 +45,13 @@ masterSocket = connectSocket(masterSocketAddress)
 
 print("INFO - Beginning stream cycle.")
 while True:
+    os.remove("/home/pi/survpi-output/current.h264")
     cameraProcess = createLocalStream()
-    vlcProcess = createLocalReceiver()
+    vlcProcess = createLocalReceiver("/home/pi/survpi-output/current.h264")
     streamStart = time.time()
 
     lastFileLength = 0
-    os.remove("/home/pi/survpi-output/current.h264")
-    masterSocket.send(b"survpi-camera!ready-send")
+    masterSocket.send(b"survpi-camera!reset-cache")
     while True:
         currentTime = time.time()
         if (currentTime - streamStart >= 1200):
@@ -74,7 +72,7 @@ while True:
             continue
 
         if (currentFileLength > lastFileLength):
-            currentFile = open("home/pi/survpi-output/current.h264","rb")
+            currentFile = open("/home/pi/survpi-output/current.h264","rb")
             currentFile.seek(lastFileLength)
             newData = currentFile.read(currentFileLength - lastFileLength)
 
