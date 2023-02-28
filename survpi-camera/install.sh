@@ -27,6 +27,7 @@ git sparse-checkout set survpi-camera
 cd survpi-camera
 
 echo "Installing..."
+mkdir /home/pi/survpi-output
 mv -f ./survpi.service /etc/systemd/system/
 mv -f ./uninstall.sh /home/pi/SurveillancePi/
 mv -f ./reinstall.sh /home/pi/SurveillancePi
