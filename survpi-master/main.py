@@ -76,16 +76,23 @@ if (__name__ == "__main__"):
     tcpServer.bind(("0.0.0.0",8888))
     tcpServer.setblocking(False)
     tcpServer.listen(5)
-    while True:
-        try:
-            connection,address = tcpServer.accept()
-            tcpConnections.append(AcceptedConnection(connection,address))
-            print(f"[{address}] Accepted.")
-        except BlockingIOError:
-            pass
+    try:
+        while True:
+            try:
+                connection,address = tcpServer.accept()
+                tcpConnections.append(AcceptedConnection(connection,address))
+                print(f"[{address}] Accepted.")
+            except BlockingIOError:
+                pass
 
-        for connectedClient in tcpConnections:
-            print("blocking...")
-            receivedData = connectedClient.connection.recv(4096)
-            print(len(receivedData))
-        print("finished loop.")
+            for connectedClient in tcpConnections:
+                print("blocking...")
+                try:
+                    receivedData = connectedClient.connection.recv(4096)
+                    print(len(receivedData))
+                except BlockingIOError:
+                    pass
+            print("finished loop.")
+    except KeyboardInterrupt:
+        udpBroadcaster.terminate()
+        tcpServer.close()
