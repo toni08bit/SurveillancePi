@@ -45,7 +45,10 @@ masterSocket = connectSocket(masterSocketAddress)
 
 print("INFO - Beginning stream cycle.")
 while True:
-    os.remove("/home/pi/survpi-output/current.h264")
+    try:
+        os.remove("/home/pi/survpi-output/current.h264")
+    except FileNotFoundError:
+        pass
     cameraProcess = createLocalStream()
     vlcProcess = createLocalReceiver("/home/pi/survpi-output/current.h264")
     streamStart = time.time()
