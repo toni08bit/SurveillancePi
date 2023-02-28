@@ -37,6 +37,8 @@ class AcceptedConnection:
         self.connection = connection
         self.address = address
 
+        self.connection.setblocking(False)
+
 def handleClient(connection,address):
     pass
 
