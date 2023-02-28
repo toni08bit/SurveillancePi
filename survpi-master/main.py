@@ -39,8 +39,30 @@ class AcceptedConnection:
 
         self.connection.setblocking(False)
 
-def handleClient(connection,address):
-    pass
+def workConnections():
+    for connectedClient in tcpConnections:
+        try:
+            receivedData = connectedClient.connection.recv(4096)
+            if (receivedData == b"survpi-camera!ready-send"):
+                pendingData[connectedClient.address] = b""
+                print(f"[{connectedClient.address[0]}] Ready.")
+            elif (not receivedData):
+                connectedClient.connection.close()
+                tcpConnections.remove(connectedClient)
+                print(f"[{connectedClient.address[0]}] Disconnected. Saving...")
+                # TODO actually save
+                print(f"[{connectedClient.address[0]}] Saved {str(len(pendingData[connectedClient.address]))} bytes.")
+                pendingData[connectedClient.address] = None
+            else:
+                if (not pendingData.get(connectedClient.address)):
+                    print(f"[{connectedClient.address[0]}] Closing, no entry.")
+                    connectedClient.connection.close()
+                    tcpConnections.remove(connectedClient)
+                    return
+                print(f"[{connectedClient.address[0]}] Appending {str(len(receivedData))} bytes.")
+                pendingData[connectedClient.address] = pendingData[connectedClient.address] + receivedData
+        except BlockingIOError:
+            pass
 
 def getConfigData():
     openFile = open(configFile)
@@ -85,14 +107,7 @@ if (__name__ == "__main__"):
             except BlockingIOError:
                 pass
 
-            for connectedClient in tcpConnections:
-                print("blocking...")
-                try:
-                    receivedData = connectedClient.connection.recv(4096)
-                    print(len(receivedData))
-                except BlockingIOError:
-                    pass
-            print("finished loop.")
+            
     except KeyboardInterrupt:
         udpBroadcaster.terminate()
         tcpServer.close()
