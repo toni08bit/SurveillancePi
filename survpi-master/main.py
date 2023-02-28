@@ -43,7 +43,7 @@ def workConnections():
     for connectedClient in tcpConnections:
         try:
             receivedData = connectedClient.connection.recv(4096)
-            if (receivedData == b"survpi-camera!ready-send"):
+            if (receivedData == b"survpi-camera!reset-cache"):
                 pendingData[connectedClient.address] = b""
                 print(f"[{connectedClient.address[0]}] Ready.")
             elif (not receivedData):
@@ -55,6 +55,7 @@ def workConnections():
                 pendingData[connectedClient.address] = None
             else:
                 if (not pendingData.get(connectedClient.address)):
+                    print(pendingData)
                     print(f"[{connectedClient.address[0]}] Closing, no entry.")
                     connectedClient.connection.close()
                     tcpConnections.remove(connectedClient)
@@ -103,7 +104,7 @@ if (__name__ == "__main__"):
             try:
                 connection,address = tcpServer.accept()
                 tcpConnections.append(AcceptedConnection(connection,address))
-                print(f"[{address}] Accepted.")
+                print(f"[{address[0]}] Accepted.")
             except BlockingIOError:
                 pass
 
