@@ -10,8 +10,8 @@ def createLocalStream():
     return subprocess.Popen([
         "libcamera-vid",
         "-t","0",
-        "--width","2304",
-        "--height","1296",
+        "--width","1920",
+        "--height","1080",
         "--codec","h264",
         "--inline",
         "--listen",
