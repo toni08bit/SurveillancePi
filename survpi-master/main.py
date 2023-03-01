@@ -7,29 +7,6 @@ import time
 configFile = "/home/pi/SurveillancePi/survpi-master/config.json"
 pendingData = {}
 
-class SocketHandler(socketserver.StreamRequestHandler):
-    def handle(self):
-        while True:
-            self.connection
-            print(f"[{self.client_address}] Blocking...")
-            self.data = self.request.recv(2048)
-            if (self.data == b"survpi-camera!ready-send"):
-                print(f"[{self.client_address}] Ready.")
-                pendingData[self.client_address] = b""
-            else:
-                if (not pendingData.get(self.client_address)):
-                    print(f"[{self.client_address}] Closing, no entry.")
-                    self.connection.close()
-                    return
-                print(f"[{self.client_address}] Appending {str(len(self.data))} bytes.")
-                pendingData[self.client_address] = pendingData[self.client_address] + self.data
-    
-    def finish(self):
-        if (not pendingData.get(self.client_address)):
-            print(f"[{self.client_address}] Ignoring disconnect, no entry.")
-            return
-        print(f"[{self.client_address}] Disconnected with {str(len(pendingData[self.client_address]))} bytes.")
-
 class AcceptedConnection:
     def __init__(self,connection,address):
         self.pendingData = b""
@@ -42,7 +19,7 @@ class AcceptedConnection:
 def workConnections():
     for connectedClient in tcpConnections:
         try:
-            receivedData = connectedClient.connection.recv(32768)
+            receivedData = connectedClient.connection.recv(8192)
             if (receivedData == b"survpi-camera!reset-cache"):
                 pendingData[connectedClient.address] = b""
                 print(f"[{connectedClient.address[0]}] Reset.")
