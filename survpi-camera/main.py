@@ -2,8 +2,8 @@ import os
 import subprocess
 import time
 import socket
-import base64
 
+tempPath = "/home/pi/SurveillancePi/survpi-camera/current.h264"
 streamStart = -1
 
 def createLocalStream():
@@ -46,11 +46,11 @@ masterSocket = connectSocket(masterSocketAddress)
 print("INFO - Beginning stream cycle.")
 while True:
     try:
-        os.remove("/home/pi/survpi-output/current.h264")
+        os.remove(tempPath)
     except FileNotFoundError:
         pass
     cameraProcess = createLocalStream()
-    vlcProcess = createLocalReceiver("/home/pi/survpi-output/current.h264")
+    vlcProcess = createLocalReceiver(tempPath)
     streamStart = time.time()
 
     lastFileLength = 0
@@ -70,12 +70,12 @@ while True:
             break
 
         try:
-            currentFileLength = os.stat("/home/pi/survpi-output/current.h264").st_size
+            currentFileLength = os.stat(tempPath).st_size
         except FileNotFoundError:
             continue
 
         if (currentFileLength > lastFileLength):
-            currentFile = open("/home/pi/survpi-output/current.h264","rb")
+            currentFile = open(tempPath,"rb")
             currentFile.seek(lastFileLength)
             newData = currentFile.read(currentFileLength - lastFileLength)
 

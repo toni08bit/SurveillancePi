@@ -24,7 +24,7 @@ def workConnections():
             receivedData = connectedClient.connection.recv(8192)
             if (receivedData == b"survpi-camera!reset-cache"):
                 connectedClient.pendingDataFile = None
-                connectedClient.lastReset = -1
+                connectedClient.lastReset = time.time()
                 while True:
                     if ((connectedClient.pendingDataFile != None) and (not os.path.isfile(connectedClient.pendingDataFile))):
                         break
@@ -40,7 +40,7 @@ def workConnections():
                 
                 dataFileSize = os.stat(connectedClient.pendingDataFile).st_size
                 openFile = open(dataCsvFile,"a")
-                openFile.write(f"{connectedClient.address[0]}:{str(connectedClient.address[1])},{str(connectedClient.lastReset)},{str(time.time())},{str(dataFileSize)}")
+                openFile.write(f"{connectedClient.pendingDataFile},{connectedClient.address[0]}:{str(connectedClient.address[1])},{str(connectedClient.lastReset)},{str(time.time())},{str(dataFileSize)}")
                 openFile.flush()
                 openFile.close()
 
