@@ -28,7 +28,7 @@ def workConnections():
                 while True:
                     if ((connectedClient.pendingDataFile != None) and (not os.path.isfile(connectedClient.pendingDataFile))):
                         break
-                    connectedClient.pendingDataFile = "/home/pi/SurveillancePi/survpi-master/files/" + uuid.uuid4() + ".h264"
+                    connectedClient.pendingDataFile = "/home/pi/SurveillancePi/survpi-master/files/" + str(uuid.uuid4()) + ".h264"
                 print(f"[{connectedClient.address[0]}] Reset.")
             elif (not receivedData):
                 connectedClient.connection.close()
