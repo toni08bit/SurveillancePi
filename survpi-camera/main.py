@@ -57,7 +57,7 @@ while True:
     masterSocket.send(b"survpi-camera!reset-cache")
     while True:
         currentTime = time.time()
-        if (currentTime - streamStart >= 1200):
+        if (currentTime - streamStart >= 300):
             vlcProcess.terminate()
             cameraProcess.wait()
             vlcProcess.wait()
