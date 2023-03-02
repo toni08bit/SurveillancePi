@@ -17,13 +17,13 @@ def createLocalStream():
         "--listen",
         "-v","0",
         "-o","tcp://0.0.0.0:8889"
-    ])
+    ],shell = True)
 
 def createLocalReceiver(outputPath):
     return subprocess.Popen([
         "su","pi","-c",
         "cd /home/pi/SurveillancePi/survpi-camera/ && cvlc tcp/h264://0.0.0.0:8889 --sout=file/ps:" + outputPath
-    ])
+    ],shell = True)
 
 def locateMasterSocket():
     udpSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
