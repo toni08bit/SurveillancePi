@@ -23,7 +23,7 @@ def createLocalReceiver(outputPath):
     return subprocess.Popen([
         "su","pi","-c",
         "cd /home/pi/SurveillancePi/survpi-camera/ && cvlc tcp/h264://0.0.0.0:8889 --sout=file/ps:" + outputPath
-    ],shell = True)
+    ])
 
 def locateMasterSocket():
     udpSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
@@ -38,18 +38,20 @@ def connectSocket(address):
     newSocket.connect(address)
     return newSocket
 
-print("INFO - Locating master socket...")
+print("[MAIN - INFO] Locating master socket...")
 masterSocketAddress = locateMasterSocket()
-print("INFO - Connecting to master socket...")
+print("[MAIN - INFO] Connecting to master socket...")
 masterSocket = connectSocket(masterSocketAddress)
 
-print("INFO - Beginning stream cycle.")
+print("[MAIN - OK] Beginning stream cycle.")
 while True:
     try:
         os.remove(tempPath)
     except FileNotFoundError:
         pass
+    print("[MAIN - INFO] Starting local stream...")
     cameraProcess = createLocalStream()
+    print("[MAIN - INFO] Starting local receiver...")
     vlcProcess = createLocalReceiver(tempPath)
     streamStart = time.time()
 
@@ -61,11 +63,11 @@ while True:
             vlcProcess.terminate()
             cameraProcess.wait()
             vlcProcess.wait()
-            print("OK - Stream restarting.")
+            print("[MAIN - OK] Stream restarting.")
             break
 
         if (vlcProcess.poll() != None or cameraProcess.poll() != None):
-            print("ERROR - Process died.")
+            print("[MAIN - ERROR] Process died.")
             time.sleep(1)
             break
 
@@ -83,6 +85,6 @@ while True:
 
             lastFileLength = currentFileLength
 
-    print("INFO - Reached end, reconnecting socket.")
+    print("[MAIN - OK] Reached end, reconnecting socket.")
     masterSocket.close()
     masterSocket = connectSocket(masterSocketAddress)
