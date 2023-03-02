@@ -22,7 +22,7 @@ def createLocalStream():
 def createLocalReceiver(outputPath):
     return subprocess.Popen([
         "su","pi","-c",
-        "cd /home/pi/survpi-output/ && cvlc tcp/h264://0.0.0.0:8889 --sout=file/ps:" + outputPath
+        "cd /home/pi/SurveillancePi/survpi-camera/ && cvlc tcp/h264://0.0.0.0:8889 --sout=file/ps:" + outputPath
     ])
 
 def locateMasterSocket():
