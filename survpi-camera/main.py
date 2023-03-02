@@ -67,6 +67,10 @@ while True:
             break
 
         if (vlcProcess.poll() != None or cameraProcess.poll() != None):
+            vlcProcess.terminate()
+            cameraProcess.terminate()
+            vlcProcess.wait()
+            cameraProcess.wait()
             print("[MAIN - ERROR] Process died.")
             time.sleep(1)
             break
