@@ -20,9 +20,14 @@ def createLocalStream():
     ],shell = True)
 
 def createLocalReceiver(outputPath):
+    # return subprocess.Popen([
+    #     "/usr/bin/su","pi","-c",
+    #     "cd /home/pi/SurveillancePi/survpi-camera/ && /usr/bin/cvlc tcp/h264://0.0.0.0:8889 --sout=file/ps:" + outputPath
+    # ])
     return subprocess.Popen([
-        "/usr/bin/su","pi","-c",
-        "cd /home/pi/SurveillancePi/survpi-camera/ && /usr/bin/cvlc tcp/h264://0.0.0.0:8889 --sout=file/ps:" + outputPath
+        "/usr/bin/mplayer",
+        "-dumpstream","tcp://0.0.0.0:8889",
+        "-dumpfile",outputPath
     ])
 
 def locateMasterSocket():
