@@ -8,7 +8,7 @@ streamStart = -1
 
 def createLocalStream():
     return subprocess.Popen([
-        "libcamera-vid",
+        "/usr/bin/libcamera-vid",
         "-t","0",
         "--width","1920",
         "--height","1080",
@@ -21,8 +21,8 @@ def createLocalStream():
 
 def createLocalReceiver(outputPath):
     return subprocess.Popen([
-        "su","pi","-c",
-        "cd /home/pi/SurveillancePi/survpi-camera/ && cvlc tcp/h264://0.0.0.0:8889 --sout=file/ps:" + outputPath
+        "/usr/bin/su","pi","-c",
+        "cd /home/pi/SurveillancePi/survpi-camera/ && /usr/bin/cvlc tcp/h264://0.0.0.0:8889 --sout=file/ps:" + outputPath
     ])
 
 def locateMasterSocket():
