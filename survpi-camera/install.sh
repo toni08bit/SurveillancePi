@@ -14,8 +14,9 @@ echo "Updating packages..."
 apt update
 apt upgrade -y
 
-echo "Installing git, if not installed."
+echo "Installing additional packages, if not installed."
 apt install git -y
+apt install ufw -y
 
 echo "Installing required packages."
 apt install python3-venv -y
@@ -27,6 +28,7 @@ git sparse-checkout set survpi-camera
 cd survpi-camera
 
 echo "Installing..."
+ufw allow 22
 mv -f ./survpi.service /etc/systemd/system/
 mv -f ./uninstall.sh /home/pi/SurveillancePi/
 mv -f ./reinstall.sh /home/pi/SurveillancePi
@@ -38,3 +40,5 @@ python3 -m venv .env
 echo "Starting service..."
 systemctl enable survpi
 systemctl start survpi
+
+echo "Done. (UFW configured, but not enabled)"

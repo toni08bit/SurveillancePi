@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name SurveillancePi;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/pi/SurveillancePi/survpi-master/web.sock
+    }
+}

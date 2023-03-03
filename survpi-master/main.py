@@ -1,6 +1,7 @@
 import socket
 import json
 import multiprocessing
+import subprocess
 import time
 import uuid
 import os
@@ -81,13 +82,23 @@ def broadcastThread():
     except KeyboardInterrupt:
         udpSocket.close()
 
+def webSubprocess():
+    return subprocess.Popen([
+        "/home/pi/SurveillancePi/survpi-master/.env/bin/uwsgi --ini /home/pi/SurveillancePi/survpi-master/web.ini"
+    ])
+
+
 if (__name__ == "__main__"):
-    print("[MAIN] Starting Threads and Sockets.")
+    print("[MAIN - INFO] Starting web subprocess...")
+    webHoster = webSubprocess()
+
+    print("[MAIN - INFO] Starting broadcaster thread...")
     udpBroadcaster = multiprocessing.Process(
         target = broadcastThread
     )
     udpBroadcaster.start()
 
+    print("[MAIN - OK] Starting main tcp socket...")
     tcpConnections = []
     tcpServer = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     tcpServer.bind(("0.0.0.0",8888))
@@ -103,8 +114,7 @@ if (__name__ == "__main__"):
                 pass
 
             workConnections()
-
-            
     except KeyboardInterrupt:
         udpBroadcaster.terminate()
+        webHoster.terminate()
         tcpServer.close()
