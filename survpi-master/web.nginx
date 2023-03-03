@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name SurveillancePi;
+    server_name _;
 
     location / {
         include uwsgi_params;
