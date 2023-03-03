@@ -6,4 +6,5 @@ def ping():
     return "Pong!",200
 
 if (__name__ == "__main__"):
+    print("hello? flask")
     application.run()
