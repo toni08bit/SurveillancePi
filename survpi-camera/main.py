@@ -6,7 +6,7 @@ import socket
 tempPath = "/home/pi/SurveillancePi/survpi-camera/current.h264"
 streamStart = -1
 
-def createLocalStream():
+def createRecorder(outputPath):
     return subprocess.Popen([
         "/usr/bin/libcamera-vid",
         "-t","0",
@@ -16,18 +16,7 @@ def createLocalStream():
         "--inline",
         "--listen",
         "-v","0",
-        "-o","tcp://0.0.0.0:8889"
-    ],shell = True)
-
-def createLocalReceiver(outputPath):
-    # return subprocess.Popen([
-    #     "/usr/bin/su","pi","-c",
-    #     "cd /home/pi/SurveillancePi/survpi-camera/ && /usr/bin/cvlc tcp/h264://0.0.0.0:8889 --sout=file/ps:" + outputPath
-    # ])
-    return subprocess.Popen([
-        "/usr/bin/mplayer",
-        "-dumpstream","tcp://0.0.0.0:8889",
-        "-dumpfile",outputPath
+        "-o",outputPath
     ])
 
 def locateMasterSocket():
@@ -54,10 +43,8 @@ while True:
         os.remove(tempPath)
     except FileNotFoundError:
         pass
-    print("[MAIN - INFO] Starting local stream...")
-    cameraProcess = createLocalStream()
-    print("[MAIN - INFO] Starting local receiver...")
-    vlcProcess = createLocalReceiver(tempPath)
+    print("[MAIN - INFO] Starting recorder...")
+    recorderProcess = createRecorder(tempPath)
     streamStart = time.time()
 
     lastFileLength = 0
@@ -65,17 +52,14 @@ while True:
     while True:
         currentTime = time.time()
         if (currentTime - streamStart >= 300):
-            vlcProcess.terminate()
-            cameraProcess.wait()
-            vlcProcess.wait()
+            recorderProcess.terminate()
+            recorderProcess.wait()
             print("[MAIN - OK] Stream restarting.")
             break
 
-        if (vlcProcess.poll() != None or cameraProcess.poll() != None):
-            vlcProcess.terminate()
-            cameraProcess.terminate()
-            vlcProcess.wait()
-            cameraProcess.wait()
+        if (recorderProcess.poll() != None):
+            recorderProcess.terminate()
+            recorderProcess.wait()
             print("[MAIN - ERROR] Process died.")
             time.sleep(1)
             break
