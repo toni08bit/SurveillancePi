@@ -15,15 +15,7 @@ apt update
 apt upgrade -y
 
 echo "Installing additional packages, if not installed. (1/2)"
-apt install git -y
-apt install python3-dev -y
-apt install python3-pip -y
-apt install build-essential -y
-apt install libssl-dev -y
-apt install libffi-dev -y
-apt install python3-setuptools -y
-apt install python3-venv -y
-apt install ufw -y
+apt install git python3-dev python3-pip build-essential libssl-dev libffi-dev python3-setuptools python3-venv ufw nginx -y
 
 echo "Installing required packages."
 apt install python3-venv -y
