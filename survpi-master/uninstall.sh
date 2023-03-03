@@ -10,6 +10,8 @@ systemctl disable survpi
 
 echo "Uninstalling..."
 rm -f /etc/systemd/system/survpi.service
+rm -f /etc/nginx/sites-available/survpi-web
+rm -f /etc/nginx/sites-enables/survpi-web
 rm -f -r $PWD
 
 echo "Thank you, goodbye!"
