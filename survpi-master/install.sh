@@ -33,8 +33,8 @@ ufw allow 8888
 mv -f ./survpi.service /etc/systemd/system/
 mv -f ./uninstall.sh /home/pi/SurveillancePi/
 mv -f ./reinstall.sh /home/pi/SurveillancePi
-mv -f ./web.nginx /etc/nginx/sites-available/survpi-web
-ln -f /etc/nginx/sites-available/survpi-web /etc/nginx/sites-enabled/
+mv -f ./web.nginx /etc/nginx/sites-available/survpi-web.conf
+ln -f -s /etc/nginx/sites-available/survpi-web.conf /etc/nginx/sites-enabled/survpi-web.conf
 systemctl restart nginx
 chmod 777 /home/pi/SurveillancePi/uninstall.sh
 chmod 777 /home/pi/SurveillancePi/reinstall.sh
@@ -42,7 +42,8 @@ chmod 777 /home/pi/SurveillancePi/survpi-master/
 python3 -m venv .env
 
 echo "Installing additional packages, if not installed. (2/2)"
-/home/pi/SurveillancePi/survpi-master/.env/bin/pip install wheel uwsgi flask
+/home/pi/SurveillancePi/survpi-master/.env/bin/pip install wheel
+/home/pi/SurveillancePi/survpi-master/.env/bin/pip install uwsgi flask
 
 echo "Starting service..."
 systemctl enable survpi
