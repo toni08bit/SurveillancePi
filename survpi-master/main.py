@@ -84,7 +84,8 @@ def broadcastThread():
 
 def webSubprocess():
     return subprocess.Popen([
-        "/home/pi/SurveillancePi/survpi-master/.env/bin/uwsgi --ini /home/pi/SurveillancePi/survpi-master/web.ini"
+        "/home/pi/SurveillancePi/survpi-master/.env/bin/uwsgi",
+        "--ini","/home/pi/SurveillancePi/survpi-master/web.ini"
     ])
 
 
