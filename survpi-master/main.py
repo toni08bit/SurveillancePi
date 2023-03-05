@@ -3,16 +3,27 @@ import json
 import multiprocessing
 import subprocess
 import time
+import shutil
 import uuid
+import base64
 import os
 
 configFile = "/home/pi/SurveillancePi/survpi-master/config.json"
 dataCsvFile = "/home/pi/SurveillancePi/survpi-master/files/data.csv"
+dataJsonFile = "/home/pi/SurveillancePi/survpi-master/data.json"
+jobsJsonFile = "/home/pi/SurveillancePi/survpi-master/jobs.json"
+externalFolder = "/media/survpi-output/"
+internalFolder = "/home/pi/SurveillancePi/survpi-master/files/"
+
+processData = {
+    "lastStart": time.time()
+}
 
 class AcceptedConnection:
     def __init__(self,connection,address):
         self.pendingDataFile = None
         self.lastReset = -1
+        self.lastPacket = -1
         self.status = None
         self.connection = connection
         self.address = address
@@ -20,6 +31,7 @@ class AcceptedConnection:
         self.connection.setblocking(False)
 
 def workConnections():
+    updateDataJson()
     for connectedClient in tcpConnections:
         try:
             receivedData = connectedClient.connection.recv(8192)
@@ -27,19 +39,19 @@ def workConnections():
                 connectedClient.pendingDataFile = None
                 connectedClient.lastReset = time.time()
                 while True:
-                    if ((connectedClient.pendingDataFile != None) and (not os.path.isfile(connectedClient.pendingDataFile))):
+                    if ((connectedClient.pendingDataFile != None) and (not getFilePath(connectedClient.pendingDataFile)[0])):
                         break
-                    connectedClient.pendingDataFile = "/home/pi/SurveillancePi/survpi-master/files/" + str(uuid.uuid4()) + ".h264"
+                    connectedClient.pendingDataFile = str(uuid.uuid4()) + ".h264"
                 print(f"[{connectedClient.address[0]}] Reset.")
             elif (not receivedData):
                 connectedClient.connection.close()
                 tcpConnections.remove(connectedClient)
                 print(f"[{connectedClient.address[0]}] Disconnected. Saving...")
-                if ((not os.path.isfile(connectedClient.pendingDataFile)) or (connectedClient.lastReset == -1)):
-                    print(f"[{connectedClient.address[0]}] No pending data or not reset.")
+                if ((connectedClient.lastReset == -1) or (connectedClient.lastPacket == -1)):
+                    print(f"[{connectedClient.address[0]}] No packet or not reset.")
                     continue
                 
-                dataFileSize = os.stat(connectedClient.pendingDataFile).st_size
+                dataFileSize = os.stat(getFilePath(connectedClient.pendingFilePath)[0]).st_size
                 openFile = open(dataCsvFile,"a")
                 openFile.write(f"{connectedClient.pendingDataFile},{connectedClient.address[0]}:{str(connectedClient.address[1])},{str(connectedClient.lastReset)},{str(time.time())},{str(dataFileSize)}\n")
                 openFile.flush()
@@ -53,18 +65,67 @@ def workConnections():
                     connectedClient.connection.close()
                     tcpConnections.remove(connectedClient)
                     return
-                openFile = open(connectedClient.pendingDataFile,"ab")
-                openFile.write(receivedData)
-                openFile.flush()
-                openFile.close()
+                appendFilePart(connectedClient.pendingDataFile,receivedData)
+                connectedClient.lastPacket = time.time()
         except BlockingIOError:
             pass
 
 def getConfigData():
-    openFile = open(configFile)
+    openFile = open(configFile,"r")
     configData = json.loads(openFile.read())
     openFile.close()
     return configData
+
+def getFilePath(fileName):
+    if (os.path.isfile(externalFolder + fileName)):
+        return (externalFolder + fileName),1
+    elif (os.path.isfile(internalFolder + fileName)):
+        return (internalFolder + fileName),0
+    else:
+        return None,-1
+
+def appendFilePart(fileName,data):
+    openFile = None
+    pathResult = getFilePath(fileName)
+    if ((os.path.isdir(externalFolder))):
+        if (pathResult[1] == 0):
+            shutil.move(pathResult[0],(externalFolder + fileName))
+            print("[MAIN - OK] Moved file " + fileName + " to external.")
+        
+        openFile = open((externalFolder + fileName),"ab")
+    else:
+        openFile = open((internalFolder + fileName),"ab")
+    
+    openFile.write(data)
+    openFile.flush()
+    openFile.close()
+
+def updateDataJson():
+    preparedData = {
+        "connectedCameras": [],
+        "lastStart": processData["lastStart"]
+    }
+    openFile = open(dataJsonFile,"w")
+    openFile.write(json.dumps(preparedData))
+    openFile.flush()
+    openFile.close()
+
+def runJob(jobData):
+    jobObject = base64.b64decode(json.loads(jobData))
+    pass # TODO
+
+def readJobsJson():
+    openFileRead = open(jobsJsonFile,"r")
+    readData = openFileRead.read()
+    openFileRead.close()
+    if (len(readData) <= 2):
+        return
+    readDataJson = json.loads(readData)
+    for jobData in readDataJson:
+        runJob(jobData)
+    openFileWrite = open(jobsJsonFile,"w")
+    openFileWrite.write("{}")
+    openFileWrite.close()
 
 def broadcastThread():
     udpSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)

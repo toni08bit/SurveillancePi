@@ -35,6 +35,7 @@ mv -f ./uninstall.sh /home/pi/SurveillancePi/
 mv -f ./reinstall.sh /home/pi/SurveillancePi
 mv -f ./web.nginx /etc/nginx/sites-available/survpi-web.conf
 ln -f -s /etc/nginx/sites-available/survpi-web.conf /etc/nginx/sites-enabled/survpi-web.conf
+rm -f /etc/nginx/sites-enabled/default
 systemctl restart nginx
 chmod 777 /home/pi/SurveillancePi/uninstall.sh
 chmod 777 /home/pi/SurveillancePi/reinstall.sh
