@@ -120,9 +120,9 @@ def updateDataJson():
 
 def runJob(jobData):
     jobObject = base64.b64decode(json.loads(jobData))
-    match jobObject.get("name"):
-        case "": # TODO
-            pass
+    jobName = jobObject.get("name")
+    if (jobName == ""):
+        pass # TODO jobs
 
 def readJobsJson():
     openFileRead = open(jobsJsonFile,"r")
