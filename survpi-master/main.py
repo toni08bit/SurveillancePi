@@ -7,7 +7,9 @@ import shutil
 import uuid
 import base64
 import os
-from ..modules import survpiprotocol
+import importlib
+
+survpiprotocol = importlib.import_module("/home/pi/SurveillancePi/modules/survpiprotocol.py")
 
 configFile = "/home/pi/SurveillancePi/survpi-master/config.json"
 dataCsvFile = "/home/pi/SurveillancePi/survpi-master/files/data.csv"

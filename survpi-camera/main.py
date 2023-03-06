@@ -2,7 +2,9 @@ import os
 import subprocess
 import time
 import socket
-from ..modules import survpiprotocol
+import importlib
+
+survpiprotocol = importlib.import_module("/home/pi/SurveillancePi/modules/survpiprotocol.py")
 
 tempPath = "/home/pi/SurveillancePi/survpi-camera/current.h264"
 thumbnailTempPath = "/home/pi/SurveillancePi/survpi-camera/thumbnail.jpg"
