@@ -16,6 +16,8 @@ def page(path):
     finalPath = os.path.abspath("html/" + path)
     if (not finalPath.startswith("/home/pi/SurveillancePi/survpi-master/html/")):
         return "None of your business",403
+    if (not os.path.isfile(finalPath)):
+        return "Not found!",404
     return flask.send_file(finalPath),200
 
 @application.route("/data",methods = ["GET"])

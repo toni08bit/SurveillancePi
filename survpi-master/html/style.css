@@ -1,0 +1,47 @@
+html,body {
+    margin: 0px;
+    background-color: rgb(0, 0, 0);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.topbar-placeholder {
+    position: relative;
+    width: 100vw;
+    height: 50px;
+}
+
+.topbar-item {
+    position: relative;
+    display: inline-block;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+
+a.topbar-item:hover {
+    color: rgb(255, 72, 72);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#topbar {
+    position: fixed;
+    width: 100vw;
+    height: 50px;
+    background-color: rgb(10, 10, 10);
+}
+
+#topbar #topbar-title {
+    color: rgb(52, 52, 52);
+}
+
+#camera-cards {
+    position: absolute;
+    top: 55px;
+    left: 5px;
+    width: calc(100% - 10px);
+    height: calc(100% - 60px);
+}

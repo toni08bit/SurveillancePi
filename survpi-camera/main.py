@@ -51,7 +51,7 @@ while True:
     masterSocket.send(b"survpi-camera!reset-cache")
     while True:
         currentTime = time.time()
-        if (currentTime - streamStart >= 300):
+        if (currentTime - streamStart >= 900):
             recorderProcess.terminate()
             recorderProcess.wait()
             print("[MAIN - OK] Stream restarting.")

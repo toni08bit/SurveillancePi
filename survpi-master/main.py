@@ -24,7 +24,6 @@ class AcceptedConnection:
         self.pendingDataFile = None
         self.lastReset = -1
         self.lastPacket = -1
-        self.status = None
         self.connection = connection
         self.address = address
 
@@ -105,6 +104,15 @@ def updateDataJson():
         "connectedCameras": [],
         "lastStart": processData["lastStart"]
     }
+
+    for connectedClient in tcpConnections:
+        preparedData["connectedCameras"].append({
+            "host": connectedClient.address[0],
+            "port": connectedClient.address[1],
+            "pendingFile": connectedClient.pendingDataFile,
+            "lastPacket": connectedClient.lastPacket
+        })
+
     openFile = open(dataJsonFile,"w")
     openFile.write(json.dumps(preparedData))
     openFile.flush()
@@ -112,7 +120,9 @@ def updateDataJson():
 
 def runJob(jobData):
     jobObject = base64.b64decode(json.loads(jobData))
-    pass # TODO
+    match jobObject.get("name"):
+        case "": # TODO
+            pass
 
 def readJobsJson():
     openFileRead = open(jobsJsonFile,"r")
@@ -168,12 +178,13 @@ if (__name__ == "__main__"):
     tcpServer.listen(5)
     try:
         while True:
-            try:
-                connection,address = tcpServer.accept()
-                tcpConnections.append(AcceptedConnection(connection,address))
-                print(f"[{address[0]}] Accepted.")
-            except BlockingIOError:
-                pass
+            if (len(tcpConnections) < 5):
+                try:
+                    connection,address = tcpServer.accept()
+                    tcpConnections.append(AcceptedConnection(connection,address))
+                    print(f"[{address[0]}] Accepted.")
+                except BlockingIOError:
+                    pass
 
             workConnections()
     except KeyboardInterrupt:
