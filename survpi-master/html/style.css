@@ -27,6 +27,15 @@ a.topbar-item:hover {
     cursor: pointer;
 }
 
+.card {
+    position: relative;
+    height: 300px;
+    width: 250px;
+    margin: 10px;
+    display: inline-block;
+    background-color: rgb(255, 255, 255);
+}
+
 #topbar {
     position: fixed;
     width: 100vw;

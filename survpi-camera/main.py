@@ -2,8 +2,10 @@ import os
 import subprocess
 import time
 import socket
+from ..modules import survpiprotocol
 
 tempPath = "/home/pi/SurveillancePi/survpi-camera/current.h264"
+thumbnailTempPath = "/home/pi/SurveillancePi/survpi-camera/thumbnail.jpg"
 streamStart = -1
 
 def createRecorder(outputPath):
@@ -16,8 +18,24 @@ def createRecorder(outputPath):
         "--inline",
         "--listen",
         "-v","0",
+        "-n",
         "-o",outputPath
     ])
+
+def takeThumbnail():
+    pictureProcess = subprocess.Popen([
+        "/usr/bin/libcamera-still",
+        "-t","2000",
+        "--width","1920",
+        "--height","1080",
+        "-n",
+        "-o",thumbnailTempPath
+    ])
+    pictureProcess.wait()
+    openFile = open(thumbnailTempPath,"rb")
+    readData = openFile.read()
+    openFile.close()
+    return readData
 
 def locateMasterSocket():
     udpSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
@@ -39,6 +57,9 @@ masterSocket = connectSocket(masterSocketAddress)
 
 print("[MAIN - OK] Beginning stream cycle.")
 while True:
+    print("[MAIN - INFO] Taking thumbnail...")
+    survpiprotocol.send(masterSocket,"t",takeThumbnail())
+
     try:
         os.remove(tempPath)
     except FileNotFoundError:
@@ -48,7 +69,7 @@ while True:
     streamStart = time.time()
 
     lastFileLength = 0
-    masterSocket.send(b"survpi-camera!reset-cache")
+    survpiprotocol.send(masterSocket,"r")
     while True:
         currentTime = time.time()
         if (currentTime - streamStart >= 900):
@@ -74,7 +95,7 @@ while True:
             currentFile.seek(lastFileLength)
             newData = currentFile.read(currentFileLength - lastFileLength)
 
-            masterSocket.send(newData)
+            survpiprotocol.send(masterSocket,"f",newData)
 
             lastFileLength = currentFileLength
 

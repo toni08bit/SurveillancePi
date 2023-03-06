@@ -24,6 +24,7 @@ echo "Cloning master directory."
 git clone --depth 1 --filter=blob:none --sparse https://github.com/BillPlayzToday/SurveillancePi
 cd SurveillancePi
 git sparse-checkout set survpi-master
+git sparse-checkout add modules
 cd survpi-master
 
 echo "Installing..."

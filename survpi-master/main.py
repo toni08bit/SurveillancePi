@@ -7,6 +7,7 @@ import shutil
 import uuid
 import base64
 import os
+from ..modules import survpiprotocol
 
 configFile = "/home/pi/SurveillancePi/survpi-master/config.json"
 dataCsvFile = "/home/pi/SurveillancePi/survpi-master/files/data.csv"
@@ -26,48 +27,51 @@ class AcceptedConnection:
         self.lastPacket = -1
         self.connection = connection
         self.address = address
+        self.thumbnail = None
 
         self.connection.setblocking(False)
 
 def workConnections():
-    updateDataJson()
     for connectedClient in tcpConnections:
-        try:
-            receivedData = connectedClient.connection.recv(8192)
-            if (receivedData == b"survpi-camera!reset-cache"):
-                connectedClient.pendingDataFile = None
-                connectedClient.lastReset = time.time()
-                while True:
-                    if ((connectedClient.pendingDataFile != None) and (not getFilePath(connectedClient.pendingDataFile)[0])):
-                        break
-                    connectedClient.pendingDataFile = str(uuid.uuid4()) + ".h264"
-                print(f"[{connectedClient.address[0]}] Reset.")
-            elif (not receivedData):
+        receivedData = survpiprotocol.recv(connectedClient.connection)
+        if (receivedData[1] == -1):
+            continue
+        elif (receivedData[1] == 1):
+            connectedClient.pendingDataFile = None
+            connectedClient.lastReset = time.time()
+            while True:
+                if ((connectedClient.pendingDataFile != None) and (not getFilePath(connectedClient.pendingDataFile)[0])):
+                    break
+                connectedClient.pendingDataFile = str(uuid.uuid4()) + ".h264"
+            print(f"[{connectedClient.address[0]}] Reset.")
+        elif (receivedData[1] == 2):
+            if (connectedClient.pendingDataFile == None):
+                print(f"[{connectedClient.address[0]}] Closing, no entry.")
                 connectedClient.connection.close()
                 tcpConnections.remove(connectedClient)
-                print(f"[{connectedClient.address[0]}] Disconnected. Saving...")
-                if ((connectedClient.lastReset == -1) or (connectedClient.lastPacket == -1)):
-                    print(f"[{connectedClient.address[0]}] No packet or not reset.")
-                    continue
-                
-                dataFileSize = os.stat(getFilePath(connectedClient.pendingFilePath)[0]).st_size
-                openFile = open(dataCsvFile,"a")
-                openFile.write(f"{connectedClient.pendingDataFile},{connectedClient.address[0]}:{str(connectedClient.address[1])},{str(connectedClient.lastReset)},{str(time.time())},{str(dataFileSize)}\n")
-                openFile.flush()
-                openFile.close()
+                return
+            appendFilePart(connectedClient.pendingDataFile,receivedData[0])
+            connectedClient.lastPacket = time.time()
+        elif (receivedData[1] == 3):
+            connectedClient.thumbnail = receivedData[0]
+        elif (receivedData[1] == 0):
+            connectedClient.connection.close()
+            tcpConnections.remove(connectedClient)
+            print(f"[{connectedClient.address[0]}] Disconnected. Saving...")
+            if ((connectedClient.lastReset == -1) or (connectedClient.lastPacket == -1)):
+                print(f"[{connectedClient.address[0]}] No packet or not reset.")
+                continue
+            
+            dataFileSize = os.stat(getFilePath(connectedClient.pendingFilePath)[0]).st_size
+            openFile = open(dataCsvFile,"a")
+            openFile.write(f"{connectedClient.pendingDataFile},{connectedClient.address[0]}:{str(connectedClient.address[1])},{str(connectedClient.lastReset)},{str(time.time())},{str(dataFileSize)}\n")
+            openFile.flush()
+            openFile.close()
 
-                print(f"[{connectedClient.address[0]}] Saved {str(dataFileSize)} bytes.")
-                connectedClient.pendingDataFile = None
-            else:
-                if (connectedClient.pendingDataFile == None):
-                    print(f"[{connectedClient.address[0]}] Closing, no entry.")
-                    connectedClient.connection.close()
-                    tcpConnections.remove(connectedClient)
-                    return
-                appendFilePart(connectedClient.pendingDataFile,receivedData)
-                connectedClient.lastPacket = time.time()
-        except BlockingIOError:
-            pass
+            print(f"[{connectedClient.address[0]}] Saved {str(dataFileSize)} bytes.")
+            connectedClient.pendingDataFile = None
+                
+    updateDataJson()
 
 def getConfigData():
     openFile = open(configFile,"r")

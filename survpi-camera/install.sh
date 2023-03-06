@@ -25,6 +25,7 @@ echo "Cloning camera directory."
 git clone --depth 1 --filter=blob:none --sparse https://github.com/BillPlayzToday/SurveillancePi
 cd SurveillancePi
 git sparse-checkout set survpi-camera
+git sparse-checkout add modules
 cd survpi-camera
 
 echo "Installing..."
