@@ -7,9 +7,15 @@ import shutil
 import uuid
 import base64
 import os
-import importlib
+import importlib.util
 
-survpiprotocol = importlib.import_module("/home/pi/SurveillancePi/modules/survpiprotocol.py")
+def importModule(moduleName):
+    moduleSpec = importlib.util.spec_from_file_location(moduleName,("/home/pi/SurveillancePi/modules/" + moduleName))
+    importedModule = importlib.util.module_from_spec(moduleSpec)
+    moduleSpec.loader.exec_module(importedModule)
+    return importedModule
+
+survpiprotocol = importModule("survpiprotocol")
 
 configFile = "/home/pi/SurveillancePi/survpi-master/config.json"
 dataCsvFile = "/home/pi/SurveillancePi/survpi-master/files/data.csv"
