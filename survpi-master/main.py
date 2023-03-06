@@ -185,8 +185,10 @@ if (__name__ == "__main__"):
                     print(f"[{address[0]}] Accepted.")
                 except BlockingIOError:
                     pass
-
-            workConnections()
+            if (len(tcpConnections) > 0):
+                workConnections()
+            else:
+                time.sleep(0.05)
     except KeyboardInterrupt:
         udpBroadcaster.terminate()
         webHoster.terminate()
