@@ -20,8 +20,9 @@ def recv(connection):
     missingBytes = dataLength
     receivedData = b""
     while missingBytes > 0:
-        receivedData = receivedData + connection.recv(missingBytes)
-        missingBytes = missingBytes - len(receivedData)
+        newData = connection.recv(missingBytes)
+        receivedData = receivedData + newData
+        missingBytes = missingBytes - len(newData)
     connection.setblocking(False)
     return (receivedData,dataType)
 
