@@ -2,15 +2,8 @@ import os
 import subprocess
 import time
 import socket
-import importlib.util
 
-def importModule(moduleName):
-    moduleSpec = importlib.util.spec_from_file_location(moduleName,("/home/pi/SurveillancePi/modules/" + moduleName))
-    importedModule = importlib.util.module_from_spec(moduleSpec)
-    moduleSpec.loader.exec_module(importedModule)
-    return importedModule
-
-survpiprotocol = importModule("survpiprotocol")
+import survpiprotocol
 
 tempPath = "/home/pi/SurveillancePi/survpi-camera/current.h264"
 thumbnailTempPath = "/home/pi/SurveillancePi/survpi-camera/thumbnail.jpg"

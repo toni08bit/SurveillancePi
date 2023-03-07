@@ -22,6 +22,7 @@ def recv(connection):
 def send(connection,dataType,data = None):
     if (data and isinstance(data,str)):
         data = bytes(data,"utf-8")
+        
     packet = b""
     if (dataType == "r"):
         packet = packet + b"r"

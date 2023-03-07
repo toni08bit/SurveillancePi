@@ -38,6 +38,10 @@ chmod 777 /home/pi/SurveillancePi/reinstall.sh
 chmod 777 /home/pi/SurveillancePi/survpi-camera/
 python3 -m venv .env
 
+echo "Moving modules..."
+mv -f ./SurveillancePi/modules/*.py ./SurveillancePi/survpi-camera/
+rm -f -r ./SurveillancePi/modules/
+
 echo "Starting service..."
 systemctl enable survpi
 systemctl start survpi

@@ -47,6 +47,13 @@ echo "Installing additional packages, if not installed. (2/2)"
 /home/pi/SurveillancePi/survpi-master/.env/bin/pip install wheel
 /home/pi/SurveillancePi/survpi-master/.env/bin/pip install uwsgi flask
 
+echo "Checking for existing config..."
+mv -f ./survpi-config.json ./SurveillancePi/survpi-master
+
+echo "Moving modules..."
+mv -f ./SurveillancePi/modules/*.py ./SurveillancePi/survpi-master/
+rm -f -r ./SurveillancePi/modules/
+
 echo "Starting service..."
 systemctl enable survpi
 systemctl start survpi

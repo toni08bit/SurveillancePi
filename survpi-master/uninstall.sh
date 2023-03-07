@@ -8,6 +8,9 @@ echo "Stopping service..."
 systemctl stop survpi
 systemctl disable survpi
 
+echo "Backing up config.json as survpi-config.json"
+mv -f survpi-master/config.json /home/pi/survpi-config.json
+
 echo "Uninstalling..."
 rm -f /etc/systemd/system/survpi.service
 rm -f /etc/nginx/sites-available/survpi-web
