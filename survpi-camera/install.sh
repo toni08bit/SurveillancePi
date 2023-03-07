@@ -39,6 +39,7 @@ chmod 777 /home/pi/SurveillancePi/survpi-camera/
 python3 -m venv .env
 
 echo "Moving modules..."
+cd ../..
 mv -f ./SurveillancePi/modules/*.py ./SurveillancePi/survpi-camera/
 rm -f -r ./SurveillancePi/modules/
 
