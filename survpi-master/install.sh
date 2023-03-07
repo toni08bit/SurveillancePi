@@ -52,7 +52,7 @@ cd ../..
 mv -f ./survpi-config.json ./SurveillancePi/survpi-master
 
 echo "Moving modules..."
-mv -f -r ./SurveillancePi/modules/*.py ./SurveillancePi/survpi-master/
+mv -f ./SurveillancePi/modules/*.py ./SurveillancePi/survpi-master/
 rm -f -r ./SurveillancePi/modules/
 
 echo "Starting service..."
