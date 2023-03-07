@@ -15,8 +15,7 @@ def recv(connection):
     else:
         return ("",0)
     
-    dataLength = struct.unpack("<i",connection.recv(4))
-    print("recv: " + str(dataLength))
+    dataLength = struct.unpack("<i",connection.recv(4))[0]
     return (connection.recv(dataLength),dataType)
 
 def send(connection,dataType,data = None):
