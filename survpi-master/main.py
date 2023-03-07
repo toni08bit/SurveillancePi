@@ -50,7 +50,7 @@ def workConnections():
                 print(f"[{connectedClient.address[0]}] Closing, no entry.")
                 connectedClient.connection.close()
                 tcpConnections.remove(connectedClient)
-                return
+                continue
             appendFilePart(connectedClient.pendingDataFile,receivedData[0])
             connectedClient.lastPacket = time.time()
         elif (receivedData[1] == 3):
@@ -63,7 +63,7 @@ def workConnections():
                 print(f"[{connectedClient.address[0]}] No packet or not reset.")
                 continue
             
-            dataFileSize = os.stat(getFilePath(connectedClient.pendingFilePath)[0]).st_size
+            dataFileSize = os.stat(getFilePath(connectedClient.pendingDataFile)[0]).st_size
             openFile = open(dataCsvFile,"a")
             openFile.write(f"{connectedClient.pendingDataFile},{connectedClient.address[0]}:{str(connectedClient.address[1])},{str(connectedClient.lastReset)},{str(time.time())},{str(dataFileSize)}\n")
             openFile.flush()
