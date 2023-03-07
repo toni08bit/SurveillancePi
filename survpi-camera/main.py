@@ -42,7 +42,7 @@ def locateMasterSocket():
     udpSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
     udpSocket.bind(("0.0.0.0",8887))
     while True:
-        data,originAddress = udpSocket.recv(1024)
+        data,originAddress = udpSocket.recvfrom(1024)
         if (data == b"survpi-master!ready-recv"):
             return (originAddress[0],8888)
 
