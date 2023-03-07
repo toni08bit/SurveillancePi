@@ -15,23 +15,28 @@ def recv(connection):
     else:
         return ("",0)
     
+    connection.setblocking(True)
     dataLength = struct.unpack("<i",connection.recv(4))[0]
-    return (connection.recv(dataLength),dataType)
+    missingBytes = dataLength
+    receivedData = b""
+    while missingBytes > 0:
+        receivedData = receivedData + connection.recv(missingBytes)
+        missingBytes = missingBytes - len(receivedData)
+    connection.setblocking(False)
+    return (receivedData,dataType)
 
 def send(connection,dataType,data = None):
     if (data and isinstance(data,str)):
         data = bytes(data,"utf-8")
         
-    packet = b""
     if (dataType == "r"):
-        packet = packet + b"r"
-        connection.send(packet)
+        connection.sendall(b"r")
         return
     elif (dataType == "f"):
-        packet = packet + b"f"
+        packet = b"f"
     elif (dataType == "t"):
-        packet = packet + b"t"
+        packet = b"t"
 
     packet = packet + struct.pack("<i",len(data))
     packet = packet + data
-    connection.send(packet)
+    connection.sendall(packet)

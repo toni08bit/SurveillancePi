@@ -193,7 +193,7 @@ if (__name__ == "__main__"):
             if (len(tcpConnections) > 0):
                 workConnections()
             else:
-                time.sleep(0.05)
+                time.sleep(0.15)
     except KeyboardInterrupt:
         udpBroadcaster.terminate()
         webHoster.terminate()
