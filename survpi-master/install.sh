@@ -49,7 +49,7 @@ echo "Installing additional packages, if not installed. (2/2)"
 
 echo "Checking for existing config..."
 cd ../..
-mv -f ./survpi-config.json ./SurveillancePi/survpi-master
+mv -f ./survpi-config.json ./SurveillancePi/survpi-master/config.json
 
 echo "Moving modules..."
 mv -f ./SurveillancePi/modules/*.py ./SurveillancePi/survpi-master/

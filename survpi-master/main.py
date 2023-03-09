@@ -42,7 +42,12 @@ def workConnections():
     for connectedClient in tcpConnections:
         receivedData = survpiprotocol.recv(connectedClient.connection)
         if (receivedData[1] == -1):
-            continue
+            if ((time.time() - connectedClient.lastPacket) <= 120):
+                continue
+            
+            print(f"[{connectedClient.address[0]}] Closing, timed out.")
+            connectedClient.connection.close()
+            tcpConnections.remove(connectedClient)
         elif (receivedData[1] == 1):
             connectedClient.pendingDataFile = None
             connectedClient.lastReset = time.time()
@@ -77,8 +82,9 @@ def workConnections():
 
             print(f"[{connectedClient.address[0]}] Saved {str(dataFileSize)} bytes.")
             connectedClient.pendingDataFile = None
-                
-    updateDataJson()
+    
+    if ((time.time() - processData["lastDataJsonUpdate"]) >= 10):
+        updateDataJson()
 
 def webSubprocess():
     return subprocess.Popen([
@@ -94,7 +100,7 @@ def broadcastThread():
             configData = getConfigData()
             if (configData.get("doBroadcast")):
                 try:
-                    udpSocket.sendto(b"survpi-master!ready-recv",("192.168.178.255",8887))
+                    udpSocket.sendto(b"survpi-master!ready-recv",(configData.get("broadcastAddress"),8887))
                 except OSError as exception:
                     if (exception.errno != 101):
                         raise
@@ -164,7 +170,8 @@ def updateDataJson():
             "host": connectedClient.address[0],
             "port": connectedClient.address[1],
             "pendingFile": connectedClient.pendingDataFile,
-            "lastPacket": connectedClient.lastPacket
+            "lastPacket": connectedClient.lastPacket,
+            "thumbnail": base64.b64encode(connection.thumbnail)
         })
 
     openFile = open(dataJsonFile,"w")

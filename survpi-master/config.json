@@ -1,5 +1,6 @@
 {
     "doBroadcast": true,
+    "broadcastAddress": "192.168.178.255",
     "broadcastInterval": 15,
     "doMount": false,
     "mountCommand": ["mount","/dev/sda1","/media"],
