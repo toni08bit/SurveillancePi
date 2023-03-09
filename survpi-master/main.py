@@ -18,7 +18,13 @@ externalFolder = "/media/survpi-output/"
 internalFolder = "/home/pi/SurveillancePi/survpi-master/files/"
 
 processData = {
-    "lastStart": time.time()
+    "lastStart": time.time(),
+    "lastDataJsonUpdate": -1,
+    "jobResponse": [],
+    "attemptedMount": False,
+    "allowMount": False,
+    "isMounted": False,
+    "lastDiskUsageCheck": -1
 }
 
 class AcceptedConnection:
@@ -74,73 +80,11 @@ def workConnections():
                 
     updateDataJson()
 
-def getConfigData():
-    openFile = open(configFile,"r")
-    configData = json.loads(openFile.read())
-    openFile.close()
-    return configData
-
-def getFilePath(fileName):
-    if (os.path.isfile(externalFolder + fileName)):
-        return (externalFolder + fileName),1
-    elif (os.path.isfile(internalFolder + fileName)):
-        return (internalFolder + fileName),0
-    else:
-        return None,-1
-
-def appendFilePart(fileName,data):
-    openFile = None
-    pathResult = getFilePath(fileName)
-    if ((os.path.isdir(externalFolder))):
-        if (pathResult[1] == 0):
-            shutil.move(pathResult[0],(externalFolder + fileName))
-            print("[MAIN - OK] Moved file " + fileName + " to external.")
-        
-        openFile = open((externalFolder + fileName),"ab")
-    else:
-        openFile = open((internalFolder + fileName),"ab")
-    
-    openFile.write(data)
-    openFile.flush()
-    openFile.close()
-
-def updateDataJson():
-    preparedData = {
-        "connectedCameras": [],
-        "lastStart": processData["lastStart"]
-    }
-
-    for connectedClient in tcpConnections:
-        preparedData["connectedCameras"].append({
-            "host": connectedClient.address[0],
-            "port": connectedClient.address[1],
-            "pendingFile": connectedClient.pendingDataFile,
-            "lastPacket": connectedClient.lastPacket
-        })
-
-    openFile = open(dataJsonFile,"w")
-    openFile.write(json.dumps(preparedData))
-    openFile.flush()
-    openFile.close()
-
-def runJob(jobData):
-    jobObject = base64.b64decode(json.loads(jobData))
-    jobName = jobObject.get("name")
-    if (jobName == ""):
-        pass # TODO jobs
-
-def readJobsJson():
-    openFileRead = open(jobsJsonFile,"r")
-    readData = openFileRead.read()
-    openFileRead.close()
-    if (len(readData) <= 2):
-        return
-    readDataJson = json.loads(readData)
-    for jobData in readDataJson:
-        runJob(jobData)
-    openFileWrite = open(jobsJsonFile,"w")
-    openFileWrite.write("{}")
-    openFileWrite.close()
+def webSubprocess():
+    return subprocess.Popen([
+        "/home/pi/SurveillancePi/survpi-master/.env/bin/uwsgi",
+        "--ini","/home/pi/SurveillancePi/survpi-master/web.ini"
+    ])
 
 def broadcastThread():
     udpSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
@@ -158,14 +102,158 @@ def broadcastThread():
     except KeyboardInterrupt:
         udpSocket.close()
 
-def webSubprocess():
-    return subprocess.Popen([
-        "/home/pi/SurveillancePi/survpi-master/.env/bin/uwsgi",
-        "--ini","/home/pi/SurveillancePi/survpi-master/web.ini"
-    ])
+def readJobsJson():
+    openFileRead = open(jobsJsonFile,"r")
+    readData = openFileRead.read()
+    openFileRead.close()
+    if (len(readData) <= 2):
+        return
+    readDataJson = json.loads(readData)
+    for jobData in readDataJson:
+        runJob(jobData)
+    openFileWrite = open(jobsJsonFile,"w")
+    openFileWrite.write("{}")
+    openFileWrite.close()
+
+def addJobResponse(jobObject):
+    if (not jobObject.get("expiresAt")):
+        jobObject["expiresAt"] = time.time() + 120
+    processData["jobResponse"].append(jobObject)
+
+def getJobResponse():
+    newJobResponse = []
+    for job in processData["jobResponse"]:
+        if (time.time() < job["expiresAt"]):
+            newJobResponse.append(job)
+    processData["jobResponse"] = newJobResponse
+    return newJobResponse
+
+def runJob(jobData):
+    jobObject = base64.b64decode(json.loads(jobData))
+    jobName = jobObject.get("name")
+    jobId = jobObject.get("id")
+    if (jobName == "reboot"):
+        os.system("reboot now")
+    elif (jobName == "config"):
+        if (jobObject.get("action") == "write"):
+            openFile = open(configFile,"w")
+            openFile.write(jobObject.get("data"))
+            openFile.flush()
+            openFile.close()
+        else:
+            openFile = open(configFile,"r")
+            addJobResponse({
+                "name": "config",
+                "id": jobId,
+                "data": json.loads(openFile.read())
+            })
+            openFile.close()
+
+def updateDataJson():
+    if (time.time() - processData["lastDataJsonUpdate"] < 1.5):
+        return
+
+    preparedData = {
+        "connectedCameras": [],
+        "lastStart": processData["lastStart"],
+        "jobs": getJobResponse()
+    }
+
+    for connectedClient in tcpConnections:
+        preparedData["connectedCameras"].append({
+            "host": connectedClient.address[0],
+            "port": connectedClient.address[1],
+            "pendingFile": connectedClient.pendingDataFile,
+            "lastPacket": connectedClient.lastPacket
+        })
+
+    openFile = open(dataJsonFile,"w")
+    openFile.write(json.dumps(preparedData))
+    openFile.flush()
+    openFile.close()
+
+def getConfigData():
+    openFile = open(configFile,"r")
+    configData = json.loads(openFile.read())
+    openFile.close()
+    return configData
+
+def readDataCsv():
+    openFile = open(dataCsvFile,"r")
+    readData = openFile.readlines()
+    openFile.close()
+
+    finalList = []
+    for lineKey in range(1,len(readData)):
+        lineValue = readData[lineKey]
+        finalList.append(lineValue.split(","))
+
+    return finalList
+
+def appendFilePart(fileName,data):
+    openFile = None
+    pathResult = getFilePath(fileName)
+    if ((os.path.isdir(externalFolder))):
+        if (pathResult[1] == 0):
+            shutil.move(pathResult[0],(externalFolder + fileName))
+            print("[MAIN - OK] Moved file " + fileName + " to external.")
+        
+        openFile = open((externalFolder + fileName),"ab")
+    else:
+        openFile = open((internalFolder + fileName),"ab")
+    
+    openFile.write(data)
+    openFile.flush()
+    openFile.close()
+
+def getFilePath(fileName):
+    if ((processData["isMounted"]) and ((time.time() - processData["lastDiskUsageCheck"]) > 15)):
+        processData["lastDiskUsageCheck"] = time.time()
+        manageDiskUsage()
+
+    if (os.path.isfile(externalFolder + fileName)):
+        processData["isMounted"] = True
+        return (externalFolder + fileName),1
+    else:
+        if ((not processData["attemptedMount"]) and ()):
+            print("[MAIN - INFO] Attempting to mount...")
+            mountCommand = getConfigData().get("mountCommand")
+            mountProcess = subprocess.Popen(mountCommand)
+            mountProcess.wait()
+            return getFilePath(fileName)
+        elif (os.path.isfile(internalFolder + fileName)):
+            processData["isMounted"] = False
+            return (internalFolder + fileName),0
+        else:
+            return None,-1
+
+def getOldestFile():
+    dataCsv = readDataCsv()
+    lowestStartIndex = None
+    for lineIndex in range(len(dataCsv)):
+        lineValue = dataCsv[lineIndex]
+        if ((lowestStartIndex == None) or (lineValue[2] < dataCsv[lowestStartIndex][2])):
+            lowestStartIndex = lineIndex
+    return dataCsv[lowestStartIndex][0]
+
+def manageDiskUsage():
+    configData = getConfigData()
+    if (not configData.get("doAutoDelete")):
+        return
+    
+    while True:
+        _,_,freeSpace = shutil.disk_usage("/media")
+        if (freeSpace > configData.get("diskMinFree")):
+            break
+
+        os.remove(getOldestFile())
 
 
 if (__name__ == "__main__"):
+    print("[MAIN - INFO] Reading config.json")
+    configData = getConfigData()
+    processData["allowMount"] = configData.get("doMount")
+
     print("[MAIN - INFO] Starting web subprocess...")
     webHoster = webSubprocess()
 

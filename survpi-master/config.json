@@ -1,4 +1,8 @@
 {
     "doBroadcast": true,
-    "broadcastInterval": 15
+    "broadcastInterval": 15,
+    "doMount": false,
+    "mountCommand": ["mount","/dev/sda1","/media"],
+    "doAutoDelete": true,
+    "diskMinFree": 100000000
 }
