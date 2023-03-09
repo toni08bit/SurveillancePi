@@ -215,7 +215,7 @@ def getFilePath(fileName):
         processData["isMounted"] = True
         return (externalFolder + fileName),1
     else:
-        if ((not processData["attemptedMount"]) and ()):
+        if ((not processData["attemptedMount"]) and (processData["allowMount"])):
             print("[MAIN - INFO] Attempting to mount...")
             mountCommand = getConfigData().get("mountCommand")
             mountProcess = subprocess.Popen(mountCommand)
