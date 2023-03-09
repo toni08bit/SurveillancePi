@@ -166,13 +166,16 @@ def updateDataJson():
     }
 
     for connectedClient in tcpConnections:
-        preparedData["connectedCameras"].append({
+        connectionObject = {
             "host": connectedClient.address[0],
             "port": connectedClient.address[1],
             "pendingFile": connectedClient.pendingDataFile,
-            "lastPacket": connectedClient.lastPacket,
-            "thumbnail": base64.b64encode(connectedClient.thumbnail)
-        })
+            "lastPacket": connectedClient.lastPacket
+        }
+        if (connectedClient.thumbnail):
+            connectionObject["thumbnail"] = base64.b64encode(connectedClient.thumbnail)
+
+        preparedData["connectedCameras"].append(connectionObject)
 
     openFile = open(dataJsonFile,"w")
     openFile.write(json.dumps(preparedData))
