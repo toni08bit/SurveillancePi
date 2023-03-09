@@ -35,9 +35,7 @@ def _getDataJson():
     openFile = open(dataJsonFile,"r")
     readData = openFile.read()
     openFile.close()
-    if (len(readData) <= 2):
-        return None
-    return json.loads(readData)
+    return readData
 
 def _getJobsJson():
     openFile = open(jobsJsonFile,"r")

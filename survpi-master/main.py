@@ -157,14 +157,15 @@ def runJob(jobData):
 
 def updateDataJson():
     currentTime = time.time()
-    if (currentTime - processData["lastDataJsonUpdate"] < 1.5):
+    if ((currentTime - processData["lastDataJsonUpdate"]) < 1.5):
         return
     processData["lastDataJsonUpdate"] = currentTime
 
     preparedData = {
         "connectedCameras": [],
         "lastStart": processData["lastStart"],
-        "jobs": getJobResponse()
+        "jobs": getJobResponse(),
+        "fileUpdate": time.time()
     }
 
     for connectedClient in tcpConnections:
