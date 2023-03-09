@@ -75,5 +75,5 @@ function loadCameras(dataJson) {
 }
 
 function topbarRefreshTime(dataJson) {
-    scriptElements["topbar-refreshtime"].innerText = (String(((Date.now() * 1000) - dataJson.fileUpdate) / 60) + "min")
+    scriptElements["topbar-refreshtime"].innerText = (String(((Date.now() / 1000) - dataJson.fileUpdate) / 60) + "min")
 }
