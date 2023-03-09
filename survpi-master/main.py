@@ -175,7 +175,7 @@ def updateDataJson():
             "lastPacket": connectedClient.lastPacket
         }
         if (connectedClient.thumbnail):
-            connectionObject["thumbnail"] = str(base64.b64encode(connectedClient.thumbnail))
+            connectionObject["thumbnail"] = base64.b64encode(connectedClient.thumbnail).decode("utf8")
 
         preparedData["connectedCameras"].append(connectionObject)
 
