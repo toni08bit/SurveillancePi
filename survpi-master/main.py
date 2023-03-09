@@ -31,7 +31,7 @@ class AcceptedConnection:
     def __init__(self,connection,address):
         self.pendingDataFile = None
         self.lastReset = -1
-        self.lastPacket = -1
+        self.lastPacket = time.time()
         self.connection = connection
         self.address = address
         self.thumbnail = None
