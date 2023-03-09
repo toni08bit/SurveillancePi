@@ -171,7 +171,7 @@ def updateDataJson():
             "port": connectedClient.address[1],
             "pendingFile": connectedClient.pendingDataFile,
             "lastPacket": connectedClient.lastPacket,
-            "thumbnail": base64.b64encode(connection.thumbnail)
+            "thumbnail": base64.b64encode(connectedClient.thumbnail)
         })
 
     openFile = open(dataJsonFile,"w")
