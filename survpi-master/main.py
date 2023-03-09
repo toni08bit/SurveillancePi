@@ -217,6 +217,7 @@ def getFilePath(fileName):
     else:
         if ((not processData["attemptedMount"]) and (processData["allowMount"])):
             print("[MAIN - INFO] Attempting to mount...")
+            processData["attemptedMount"] = True
             mountCommand = getConfigData().get("mountCommand")
             mountProcess = subprocess.Popen(mountCommand)
             mountProcess.wait()
