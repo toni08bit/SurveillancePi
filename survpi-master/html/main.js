@@ -47,7 +47,7 @@ function getDataJson(callbackFunc) {
         }
         response.text().then(function(responseText) {
             if (responseText == "" || responseText == "{}") {
-                warn("[WARN] data.json is empty. Not calling back.")
+                console.warn("[WARN] data.json is empty. Not calling back.")
                 return
             }
             callbackFunc(JSON.parse(responseText))

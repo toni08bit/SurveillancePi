@@ -3,7 +3,7 @@
     "broadcastAddress": "192.168.178.255",
     "broadcastInterval": 15,
     "doMount": false,
-    "mountCommand": ["mount","/dev/sda1","/media"],
+    "mountCommand": ["/usr/bin/mount","/dev/sda1","/media"],
     "doAutoDelete": true,
     "diskMinFree": 100000000
 }
