@@ -156,8 +156,10 @@ def runJob(jobData):
             openFile.close()
 
 def updateDataJson():
-    if (time.time() - processData["lastDataJsonUpdate"] < 1.5):
+    currentTime = time.time()
+    if (currentTime - processData["lastDataJsonUpdate"] < 1.5):
         return
+    processData["lastDataJsonUpdate"] = currentTime
 
     preparedData = {
         "connectedCameras": [],
@@ -173,7 +175,7 @@ def updateDataJson():
             "lastPacket": connectedClient.lastPacket
         }
         if (connectedClient.thumbnail):
-            connectionObject["thumbnail"] = base64.b64encode(connectedClient.thumbnail)
+            connectionObject["thumbnail"] = str(base64.b64encode(connectedClient.thumbnail))
 
         preparedData["connectedCameras"].append(connectionObject)
 
