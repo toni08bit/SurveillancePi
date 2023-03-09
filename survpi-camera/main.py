@@ -18,7 +18,6 @@ def createRecorder(outputPath):
         "--codec","h264",
         "--inline",
         "--listen",
-        "-v","0",
         "-n",
         "-o",outputPath
     ])
