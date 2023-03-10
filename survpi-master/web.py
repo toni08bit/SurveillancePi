@@ -59,6 +59,9 @@ def save():
             continue
         arcName = (includedFile[1].replace(".","-") + "/" + includedFile[2] + "-" + includedFile[3])
         newZip.write(getFileResult,arcName)
+    newZip.close()
+
+    return flask.send_file(zipBytes),200
 
 @application.route("/job",methods = ["POST"])
 def job():
