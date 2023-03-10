@@ -96,6 +96,8 @@ while True:
 
             lastFileLength = currentFileLength
 
+        time.sleep(0.2)
+
     print("[MAIN - OK] Reached end, reconnecting socket.")
     masterSocket.close()
     masterSocket = connectSocket(masterSocketAddress)
