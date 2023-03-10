@@ -34,6 +34,7 @@ a.topbar-item:hover {
     margin: 10px;
     display: inline-block;
     background-color: rgb(32, 32, 32);
+    color: rgb(255, 255, 255);
     transition: background-color 250ms;
 }
 
@@ -52,12 +53,26 @@ a.topbar-item:hover {
 
 .camera-card-thumbnail-container img {
     position: relative;
-    display: flow-root;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
-    object-fit: contain;
     height: 100%;
+}
+
+.camera-card-name {
+    position: absolute;
+    left: 2%;
+    top: 52%;
+    width: 96%;
+    height: 10%;
+}
+
+.camera-card-host {
+    position: absolute;
+    left: 2%;
+    top: 64%;
+    width: 96%;
+    height: 10%;
 }
 
 #topbar {
@@ -84,4 +99,28 @@ a.topbar-item:hover {
     left: 5px;
     width: calc(100% - 10px);
     height: calc(100% - 60px);
+}
+
+#save-from-container,#save-until-container {
+    position: absolute;
+    left: 5%;
+    height: 50px;
+    width: 400px;
+    color: rgb(255, 255, 255);
+}
+
+#save-from-container {
+    top: 10%;
+}
+
+#save-until-container {
+    top: calc(15% + 50px);
+}
+
+#save-submit {
+    position: absolute;
+    top: calc(25% + 50px);
+    left: 5%;
+    height: 20px;
+    width: 100px;
 }
