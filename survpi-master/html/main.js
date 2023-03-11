@@ -53,7 +53,7 @@ function onInit() {
                         scriptElements["save-submit"].innerText = "Please wait..."
                         scriptElements["save-submit"].setAttribute("disabled",true)
 
-                        location.href = ("/save?start" + String(startDate.valueOf() / 1000) + "&end=" + String(endDate.valueOf() / 1000))
+                        location.href = ("/save?start=" + String(startDate.valueOf() / 1000) + "&end=" + String(endDate.valueOf() / 1000))
                     })
                 } else {
                     console.warn("Unknown page: " + fileName)
