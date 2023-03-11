@@ -59,6 +59,7 @@ def save():
         newZip.write(getFileResult,arcName)
     newZip.close()
 
+    zipBytes.seek(0)
     return flask.send_file(zipBytes,download_name = "video-files.zip",as_attachment = True),200
 
 @application.route("/job",methods = ["POST"])
