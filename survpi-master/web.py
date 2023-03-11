@@ -38,10 +38,8 @@ def datacsv():
 
 @application.route("/save",methods = ["GET"])
 def save():
-    startTime = flask.request.args["start"]
-    endTime = flask.request.args["end"]
-    if ((not isinstance(startTime,int)) or (not isinstance(endTime,int))):
-        return "Invalid arguments",400
+    startTime = int(flask.request.args["start"])
+    endTime = int(flask.request.args["end"])
     timeData = _readDataCsv()
     includedFiles = []
     for line in timeData:
