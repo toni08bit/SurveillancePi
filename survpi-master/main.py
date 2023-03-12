@@ -76,7 +76,7 @@ def workConnections():
             
             dataFileSize = os.stat(getFilePath(connectedClient.pendingDataFile)[0]).st_size
             openFile = open(dataCsvFile,"a")
-            openFile.write(f"{connectedClient.pendingDataFile},{connectedClient.address[0]}:{str(connectedClient.address[1])},{str(connectedClient.lastReset)},{str(time.time())},{str(dataFileSize)}\n")
+            openFile.write(f"{connectedClient.pendingDataFile},{connectedClient.address[0]}:{str(connectedClient.address[1])},{str(round(connectedClient.lastReset))},{str(round(time.time()))},{str(dataFileSize)}\n")
             openFile.flush()
             openFile.close()
 

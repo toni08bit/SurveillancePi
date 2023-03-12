@@ -91,6 +91,7 @@ while True:
             currentFile = open(tempPath,"rb")
             currentFile.seek(lastFileLength)
             newData = currentFile.read(currentFileLength - lastFileLength)
+            currentFile.close()
 
             survpiprotocol.send(masterSocket,"f",newData)
 

@@ -20,22 +20,17 @@ def recv(connection):
     return (receivedData,dataType)
 
 def send(connection,dataType,data = None):
-    if (data and isinstance(data,str)):
-        data = bytes(data,"utf-8")
-        
     if (dataType == "r"):
-        connection.sendall(b"r")
+        _force_send(connection,b"r")
         return
     elif (dataType == "f"):
-        packet = b"f"
+        _force_send(connection,b"f")
     elif (dataType == "t"):
         packet = b"t"
+        _force_send(connection,b"t")
 
-    packet = packet + struct.pack("<i",len(data))
-    packet = packet + data
-
-    connection.sendall(packet)
-
+    _force_send(connection,struct.pack("<i",len(data)))
+    _force_send(connection,packet)
 
 def _force_recv(connection,dataLength):
     connection.setblocking(True)
@@ -47,3 +42,10 @@ def _force_recv(connection,dataLength):
         missingBytes = missingBytes - len(newData)
     connection.setblocking(False)
     return receivedData
+
+def _force_send(connection,data):
+    dataLength = len(data)
+    missingBytes = dataLength
+    while missingBytes > 0:
+        sentBytes = connection.send(data[(dataLength - missingBytes):])
+        missingBytes = missingBytes - sentBytes
