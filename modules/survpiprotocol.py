@@ -26,11 +26,10 @@ def send(connection,dataType,data = None):
     elif (dataType == "f"):
         _force_send(connection,b"f")
     elif (dataType == "t"):
-        packet = b"t"
         _force_send(connection,b"t")
 
     _force_send(connection,struct.pack("<i",len(data)))
-    _force_send(connection,packet)
+    _force_send(connection,data)
 
 def _force_recv(connection,dataLength):
     connection.setblocking(True)
