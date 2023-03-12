@@ -7,6 +7,8 @@ import shutil
 import uuid
 import base64
 import os
+import io
+import zipfile
 
 import survpiprotocol
 
@@ -154,6 +156,33 @@ def runJob(jobData):
                 "data": json.loads(openFile.read())
             })
             openFile.close()
+    elif (jobName == "pack"):
+        timeData = readDataCsv()
+        includedFiles = []
+        for line in timeData:
+            currentStart = int(line[2])
+            currentEnd = int(line[3])
+            if (currentStart <= jobObject.get("end") and currentEnd >= jobObject.get("start")):
+                includedFiles.append(line)
+
+        zipPath = (internalFolder + "packets/" + str(uuid.uuid4()) + ".zip")
+        zipBytes = open(zipPath,"a")
+        newZip = zipfile.ZipFile(zipBytes,"w",zipfile.ZIP_STORED)
+        for includedFile in includedFiles:
+            getFileResult = getFilePath(includedFile[0])[0]
+            if (not getFileResult):
+                print("[WARN] File " + includedFile[0] + " requested, but not available! Skipping...")
+                continue
+            arcName = (includedFile[1].replace(".","-") + "/" + includedFile[2] + "-" + includedFile[3])
+            newZip.write(getFileResult,arcName)
+        newZip.close()
+        zipBytes.flush()
+        zipBytes.close()
+        addJobResponse({
+            "name": "pack",
+            "id": jobId,
+            "data": zipPath
+        })
 
 def updateDataJson():
     currentTime = time.time()
