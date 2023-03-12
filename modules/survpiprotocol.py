@@ -15,15 +15,8 @@ def recv(connection):
     else:
         return ("",0)
     
-    connection.setblocking(True)
-    dataLength = struct.unpack("<i",connection.recv(4))[0]
-    missingBytes = dataLength
-    receivedData = b""
-    while missingBytes > 0:
-        newData = connection.recv(missingBytes)
-        receivedData = receivedData + newData
-        missingBytes = missingBytes - len(newData)
-    connection.setblocking(False)
+    dataLength = struct.unpack("<i",_force_recv(connection,4))[0]
+    receivedData = _force_recv(connection,dataLength)
     return (receivedData,dataType)
 
 def send(connection,dataType,data = None):
@@ -40,4 +33,17 @@ def send(connection,dataType,data = None):
 
     packet = packet + struct.pack("<i",len(data))
     packet = packet + data
+
     connection.sendall(packet)
+
+
+def _force_recv(connection,dataLength):
+    connection.setblocking(True)
+    missingBytes = dataLength
+    receivedData = b""
+    while missingBytes > 0:
+        newData = connection.recv(missingBytes)
+        receivedData = receivedData + newData
+        missingBytes = missingBytes - len(newData)
+    connection.setblocking(False)
+    return receivedData
