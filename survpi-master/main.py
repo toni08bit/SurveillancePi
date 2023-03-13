@@ -7,7 +7,6 @@ import shutil
 import uuid
 import base64
 import os
-import io
 import zipfile
 
 import survpiprotocol

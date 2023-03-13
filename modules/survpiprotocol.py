@@ -33,6 +33,7 @@ def send(connection,dataType,data = None):
 
 def _force_recv(connection,dataLength):
     connection.setblocking(True)
+    connection.settimeout(20)
     missingBytes = dataLength
     receivedData = b""
     while missingBytes > 0:
