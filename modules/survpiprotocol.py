@@ -1,4 +1,5 @@
 import struct
+import socket
 
 def recv(connection):
     try:
@@ -15,9 +16,12 @@ def recv(connection):
     else:
         return ("",0)
     
-    dataLength = struct.unpack("<i",_force_recv(connection,4))[0]
-    receivedData = _force_recv(connection,dataLength)
-    return (receivedData,dataType)
+    try:
+        dataLength = struct.unpack("<i",_force_recv(connection,4))[0]
+        receivedData = _force_recv(connection,dataLength)
+        return (receivedData,dataType)
+    except socket.timeout:
+        return ("",0)
 
 def send(connection,dataType,data = None):
     if (dataType == "r"):
