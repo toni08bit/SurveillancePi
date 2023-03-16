@@ -21,6 +21,7 @@ internalFolder = "/home/pi/SurveillancePi/survpi-master/files/"
 processData = {
     "lastStart": time.time(),
     "lastDataJsonUpdate": -1,
+    "lastJobsJsonRead": -1,
     "jobResponse": [],
     "attemptedMount": False,
     "allowMount": False,
@@ -87,6 +88,9 @@ def workConnections():
     if ((time.time() - processData["lastDataJsonUpdate"]) >= 10):
         updateDataJson()
 
+    if ((time.time() - processData["lastJobsJsonRead"]) >= 1.5):
+        readJobsJson()
+
 def webSubprocess():
     return subprocess.Popen([
         "/home/pi/SurveillancePi/survpi-master/.env/bin/uwsgi",
@@ -110,6 +114,7 @@ def broadcastThread():
         udpSocket.close()
 
 def readJobsJson():
+    processData["lastJobsJsonRead"] = time.time()
     openFileRead = open(jobsJsonFile,"r")
     readData = openFileRead.read()
     openFileRead.close()
@@ -124,7 +129,7 @@ def readJobsJson():
 
 def addJobResponse(jobObject):
     if (not jobObject.get("expiresAt")):
-        jobObject["expiresAt"] = time.time() + 120
+        jobObject["expiresAt"] = time.time() + 900
     processData["jobResponse"].append(jobObject)
 
 def getJobResponse():
@@ -136,7 +141,7 @@ def getJobResponse():
     return newJobResponse
 
 def runJob(jobData):
-    jobObject = base64.b64decode(json.loads(jobData))
+    jobObject = json.loads(base64.b64decode(jobData).decode("utf-8"))
     jobName = jobObject.get("name")
     jobId = jobObject.get("id")
     if (jobName == "reboot"):
@@ -164,7 +169,7 @@ def runJob(jobData):
             if (currentStart <= jobObject.get("end") and currentEnd >= jobObject.get("start")):
                 includedFiles.append(line)
 
-        zipPath = (internalFolder + "packets/" + str(uuid.uuid4()) + ".zip")
+        zipPath = (internalFolder + "packets/" + jobId + ".zip")
         zipBytes = open(zipPath,"a")
         newZip = zipfile.ZipFile(zipBytes,"w",zipfile.ZIP_STORED)
         for includedFile in includedFiles:
@@ -180,7 +185,7 @@ def runJob(jobData):
         addJobResponse({
             "name": "pack",
             "id": jobId,
-            "data": zipPath
+            "status": 1
         })
 
 def updateDataJson():
@@ -201,7 +206,8 @@ def updateDataJson():
             "host": connectedClient.address[0],
             "port": connectedClient.address[1],
             "pendingFile": connectedClient.pendingDataFile,
-            "lastPacket": connectedClient.lastPacket
+            "lastPacket": connectedClient.lastPacket,
+            "lastReset": connectedClient.lastReset
         }
         if (connectedClient.thumbnail):
             connectionObject["thumbnail"] = base64.b64encode(connectedClient.thumbnail).decode("utf8")

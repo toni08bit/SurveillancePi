@@ -33,6 +33,7 @@ function onInit() {
                     scriptElements["save-until-date"] = document.getElementById("save-until-date")
                     scriptElements["save-until-time"] = document.getElementById("save-until-time")
                     scriptElements["save-submit"] = document.getElementById("save-submit")
+                    scriptElements["save-status"] = document.getElementById("save-status")
                     getDataJson(function(dataJson) {
                         topbarRefreshTime(dataJson)
                     })
@@ -41,6 +42,10 @@ function onInit() {
                             alert("Fill in all the fields.")
                             return
                         }
+                        if (!confirm("Are you sure?")) {
+                            return
+                        }
+
                         let startDate = (new Date(scriptElements["save-from-date"].value))
                         let startTime = scriptElements["save-from-time"].value.split(":")
                         startDate.setHours(startTime[0])
@@ -53,7 +58,32 @@ function onInit() {
                         scriptElements["save-submit"].innerText = "Please wait..."
                         scriptElements["save-submit"].setAttribute("disabled",true)
 
-                        location.href = ("/save?start=" + String(startDate.valueOf() / 1000) + "&end=" + String(endDate.valueOf() / 1000))
+                        fetch(
+                            "/job",
+                            {
+                                "method": "POST",
+                                "body": JSON.stringify({
+                                    "name": "pack",
+                                    "start": (startDate.valueOf() / 1000),
+                                    "end": (endDate.valueOf() / 1000)
+                                })
+                            }
+                        ).then(function(response) {
+                            if (!response.ok) {
+                                alert("Failed to submit request! Please try again later.")
+                                return
+                            }
+                            response.text().then(function(responseText) {
+                                alert("The request has been submitted.")
+                                scriptElements["save-status"].innerText = ("Request ID: " + responseText + ", check Requests page.")
+                            })
+                        })
+                    })
+                } else if (fileName == "requests.html") {
+                    scriptElements["response-list"] = document.getElementById("response-list")
+                    getDataJson(function(dataJson) {
+                        topbarRefreshTime(dataJson)
+                        loadResponses(dataJson)
                     })
                 } else {
                     console.warn("Unknown page: " + fileName)
@@ -115,6 +145,8 @@ function topbarRefreshTime(dataJson) {
 }
 
 function createCameraCard(cameraObject,cameraName) {
+    let currentTime = Date.now()
+
     let newContainer = document.createElement("div")
     newContainer.setAttribute("class","card camera-card")
     let thumbnailContainer = document.createElement("div")
@@ -131,6 +163,10 @@ function createCameraCard(cameraObject,cameraName) {
     hostSpan.setAttribute("class","camera-card-host")
     hostSpan.innerText = cameraObject.host
     newContainer.appendChild(hostSpan)
+    let timeSpan = document.createElement("span")
+    timeSpan.setAttribute("class","camera-card-time")
+    timeSpan.innerText = (String(Math.round(currentTime - cameraObject.lastReset)) + "m")
+    newContainer.appendChild(timeSpan)
     
     scriptElements["camera-cards-container"].appendChild(newContainer)
 }
@@ -143,3 +179,12 @@ function loadCameras(dataJson) {
     }
 }
 
+function createResponseItem(responseObject) {
+    // TODO
+}
+
+function loadResponses(dataJson) {
+    for (let responseObject of dataJson.jobs) {
+        createResponseItem(responseObject)
+    }
+}

@@ -59,20 +59,23 @@ a.topbar-item:hover {
     height: 100%;
 }
 
-.camera-card-name {
+.camera-card-name,.camera-card-host,.camera-card-time {
     position: absolute;
     left: 2%;
-    top: 52%;
     width: 96%;
     height: 10%;
 }
 
+.camera-card-name {
+    top: 52%;
+}
+
 .camera-card-host {
-    position: absolute;
-    left: 2%;
     top: 64%;
-    width: 96%;
-    height: 10%;
+}
+
+.camera-card-time {
+    top: 76%;
 }
 
 #topbar {
@@ -123,4 +126,18 @@ a.topbar-item:hover {
     left: 5%;
     height: 20px;
     width: 100px;
+}
+
+#response-list {
+    position: absolute;
+    top: calc(5% + 50px);
+    left: 2%;
+    width: 77%;
+}
+
+#response-controls {
+    position: absolute;
+    top: calc(5% + 50px);
+    right: 2%;
+    width: 17%;
 }
