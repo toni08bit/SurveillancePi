@@ -58,7 +58,7 @@ def sendNewFrames(lastFileLength,currentFileLength):
 
         survpiprotocol.send(masterSocket,"f",newData)
 
-        return currentFileLength
+    return currentFileLength
 
 print("[MAIN - INFO] Locating master socket...")
 masterSocketAddress = locateMasterSocket()
