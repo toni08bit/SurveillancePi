@@ -49,6 +49,17 @@ def connectSocket(address):
     newSocket.connect(address)
     return newSocket
 
+def sendNewFrames(lastFileLength,currentFileLength):
+    if (currentFileLength > lastFileLength):
+        currentFile = open(tempPath,"rb")
+        currentFile.seek(lastFileLength)
+        newData = currentFile.read(currentFileLength - lastFileLength)
+        currentFile.close()
+
+        survpiprotocol.send(masterSocket,"f",newData)
+
+        return currentFileLength
+
 print("[MAIN - INFO] Locating master socket...")
 masterSocketAddress = locateMasterSocket()
 print("[MAIN - INFO] Connecting to master socket...")
@@ -78,26 +89,19 @@ while True:
             time.sleep(1)
             break
 
-        if (recorderProcess.poll() != None):
-            print("[MAIN - INFO] Process exited.")
-            recorderProcess.terminate()
-            recorderProcess.wait()
-            break
-
         try:
             currentFileLength = os.stat(tempPath).st_size
         except FileNotFoundError:
             continue
 
-        if (currentFileLength > lastFileLength):
-            currentFile = open(tempPath,"rb")
-            currentFile.seek(lastFileLength)
-            newData = currentFile.read(currentFileLength - lastFileLength)
-            currentFile.close()
+        if (recorderProcess.poll() != None):
+            print("[MAIN - INFO] Process exited.")
+            recorderProcess.terminate()
+            recorderProcess.wait()
+            sendNewFrames(lastFileLength,currentFileLength)
+            break
 
-            survpiprotocol.send(masterSocket,"f",newData)
-
-            lastFileLength = currentFileLength
+        lastFileLength = sendNewFrames(lastFileLength,currentFileLength)
 
         time.sleep(0.2)
 
