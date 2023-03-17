@@ -13,7 +13,7 @@ partTime = 900
 def createRecorder(outputPath):
     return subprocess.Popen([
         "/usr/bin/libcamera-vid",
-        "-t",str(partTime),
+        "-t",str(partTime * 1000),
         "--width","1920",
         "--height","1080",
         "--codec","libav",
