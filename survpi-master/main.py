@@ -41,10 +41,12 @@ class AcceptedConnection:
         self.connection.setblocking(False)
 
 def workConnections():
+    currentTime = time.time()
+
     for connectedClient in tcpConnections:
         receivedData = survpiprotocol.recv(connectedClient.connection)
         if (receivedData[1] == -1):
-            if ((time.time() - connectedClient.lastPacket) <= 120):
+            if ((currentTime - connectedClient.lastPacket) <= 120):
                 continue
             
             print(f"[{connectedClient.address[0]}] Closing, timed out.")
@@ -52,7 +54,7 @@ def workConnections():
             tcpConnections.remove(connectedClient)
         elif (receivedData[1] == 1):
             connectedClient.pendingDataFile = None
-            connectedClient.lastReset = time.time()
+            connectedClient.lastReset = currentTime
             while True:
                 if ((connectedClient.pendingDataFile != None) and (not getFilePath(connectedClient.pendingDataFile)[0])):
                     break
@@ -65,7 +67,7 @@ def workConnections():
                 tcpConnections.remove(connectedClient)
                 continue
             appendFilePart(connectedClient.pendingDataFile,receivedData[0])
-            connectedClient.lastPacket = time.time()
+            connectedClient.lastPacket = currentTime
         elif (receivedData[1] == 3):
             connectedClient.thumbnail = receivedData[0]
         elif (receivedData[1] == 0):
@@ -85,10 +87,10 @@ def workConnections():
             print(f"[{connectedClient.address[0]}] Saved {str(dataFileSize)} bytes.")
             connectedClient.pendingDataFile = None
     
-    if ((time.time() - processData["lastDataJsonUpdate"]) >= 10):
+    if ((currentTime - processData["lastDataJsonUpdate"]) >= 10):
         updateDataJson()
 
-    if ((time.time() - processData["lastJobsJsonRead"]) >= 1.5):
+    if ((currentTime - processData["lastJobsJsonRead"]) >= 1.5):
         readJobsJson()
 
 def webSubprocess():
@@ -168,9 +170,9 @@ def runJob(jobData):
             currentEnd = int(line[3])
             if (currentStart <= jobObject.get("end") and currentEnd >= jobObject.get("start")):
                 includedFiles.append(line)
-
+        print("[INFO] Packing " + str(len(includedFiles)) + " files into zip " + jobId + ".")
         zipPath = (internalFolder + "packets/" + jobId + ".zip")
-        zipBytes = open(zipPath,"a")
+        zipBytes = open(zipPath,"ab")
         newZip = zipfile.ZipFile(zipBytes,"w",zipfile.ZIP_STORED)
         for includedFile in includedFiles:
             getFileResult = getFilePath(includedFile[0])[0]
@@ -187,6 +189,7 @@ def runJob(jobData):
             "id": jobId,
             "status": 1
         })
+        print("[OK] Packed zip " + jobId + ".")
 
 def updateDataJson():
     currentTime = time.time()

@@ -165,7 +165,7 @@ function createCameraCard(cameraObject,cameraName) {
     newContainer.appendChild(hostSpan)
     let timeSpan = document.createElement("span")
     timeSpan.setAttribute("class","camera-card-time")
-    timeSpan.innerText = (String(Math.round(currentTime - cameraObject.lastReset)) + "m")
+    timeSpan.innerText = (String(Math.round((currentTime - cameraObject.lastReset) * 1000 / 60)) + "m")
     newContainer.appendChild(timeSpan)
     
     scriptElements["camera-cards-container"].appendChild(newContainer)
