@@ -8,11 +8,12 @@ import survpiprotocol
 tempPath = "/home/pi/SurveillancePi/survpi-camera/current.mp4"
 thumbnailTempPath = "/home/pi/SurveillancePi/survpi-camera/thumbnail.jpg"
 streamStart = -1
+partTime = 900
 
 def createRecorder(outputPath):
     return subprocess.Popen([
         "/usr/bin/libcamera-vid",
-        "-t","0",
+        "-t",str(partTime),
         "--width","1920",
         "--height","1080",
         "--codec","libav",
@@ -70,17 +71,17 @@ while True:
     survpiprotocol.send(masterSocket,"r")
     while True:
         currentTime = time.time()
-        if (currentTime - streamStart >= 900):
+        if (currentTime - streamStart >= (partTime + 30)):
             recorderProcess.terminate()
             recorderProcess.wait()
-            print("[MAIN - OK] Stream restarting.")
+            print("[MAIN - ERROR] Process timed out.")
+            time.sleep(1)
             break
 
         if (recorderProcess.poll() != None):
+            print("[MAIN - INFO] Process exited.")
             recorderProcess.terminate()
             recorderProcess.wait()
-            print("[MAIN - ERROR] Process died.")
-            time.sleep(1)
             break
 
         try:
