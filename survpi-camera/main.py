@@ -95,8 +95,7 @@ while True:
             continue
 
         if (recorderProcess.poll() != None):
-            print("[MAIN - INFO] Process exited.")
-            recorderProcess.terminate()
+            print("[MAIN - INFO] Process exited with " + str(currentFileLength) + "of data.")
             recorderProcess.wait()
             sendNewFrames(lastFileLength,currentFileLength)
             break
