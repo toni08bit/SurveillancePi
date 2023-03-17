@@ -5,7 +5,7 @@ import socket
 
 import survpiprotocol
 
-tempPath = "/home/pi/SurveillancePi/survpi-camera/current.h264"
+tempPath = "/home/pi/SurveillancePi/survpi-camera/current.mp4"
 thumbnailTempPath = "/home/pi/SurveillancePi/survpi-camera/thumbnail.jpg"
 streamStart = -1
 
@@ -15,6 +15,7 @@ def createRecorder(outputPath):
         "-t","0",
         "--width","1920",
         "--height","1080",
+        "--codec","libav",
         "-n",
         "-o",outputPath
     ])

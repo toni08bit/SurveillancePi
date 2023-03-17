@@ -145,7 +145,7 @@ function topbarRefreshTime(dataJson) {
 }
 
 function createCameraCard(cameraObject,cameraName) {
-    let currentTime = Date.now()
+    let currentTime = Date.now() / 1000
 
     let newContainer = document.createElement("div")
     newContainer.setAttribute("class","card camera-card")
@@ -165,7 +165,7 @@ function createCameraCard(cameraObject,cameraName) {
     newContainer.appendChild(hostSpan)
     let timeSpan = document.createElement("span")
     timeSpan.setAttribute("class","camera-card-time")
-    timeSpan.innerText = (String(Math.round((currentTime - cameraObject.lastReset) * 1000 / 60)) + "m")
+    timeSpan.innerText = (String(Math.round((currentTime - cameraObject.lastReset) / 60 * 10) / 10) + "min")
     newContainer.appendChild(timeSpan)
     
     scriptElements["camera-cards-container"].appendChild(newContainer)

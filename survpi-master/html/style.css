@@ -4,6 +4,21 @@ html,body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+button {
+    background-color: rgb(255, 255, 255);
+    border: none;
+    transition: background-color 200ms;
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+button:hover {
+    background-color: rgb(195, 195, 195);
+}
+
 .topbar-placeholder {
     position: relative;
     width: 100vw;
@@ -140,4 +155,12 @@ a.topbar-item:hover {
     top: calc(5% + 50px);
     right: 2%;
     width: 17%;
+}
+
+#response-controls button {
+    display: block;
+    margin-top: 2.5px;
+    margin-bottom: 2.5px;
+    margin-left: 50%;
+    transform: translateX(-50%);
 }
