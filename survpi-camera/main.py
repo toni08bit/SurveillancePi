@@ -5,18 +5,16 @@ import socket
 
 import survpiprotocol
 
-tempPath = "/home/pi/SurveillancePi/survpi-camera/current.mp4"
+tempPath = "/home/pi/SurveillancePi/survpi-camera/current.h264"
 thumbnailTempPath = "/home/pi/SurveillancePi/survpi-camera/thumbnail.jpg"
 streamStart = -1
-partTime = 900
 
 def createRecorder(outputPath):
     return subprocess.Popen([
         "/usr/bin/libcamera-vid",
-        "-t",str(partTime * 1000),
+        "-t","0",
         "--width","1920",
         "--height","1080",
-        "--codec","libav",
         "-n",
         "-o",outputPath
     ])
@@ -49,17 +47,6 @@ def connectSocket(address):
     newSocket.connect(address)
     return newSocket
 
-def sendNewFrames(lastFileLength,currentFileLength):
-    if (currentFileLength > lastFileLength):
-        currentFile = open(tempPath,"rb")
-        currentFile.seek(lastFileLength)
-        newData = currentFile.read(currentFileLength - lastFileLength)
-        currentFile.close()
-
-        survpiprotocol.send(masterSocket,"f",newData)
-
-    return currentFileLength
-
 print("[MAIN - INFO] Locating master socket...")
 masterSocketAddress = locateMasterSocket()
 print("[MAIN - INFO] Connecting to master socket...")
@@ -82,10 +69,16 @@ while True:
     survpiprotocol.send(masterSocket,"r")
     while True:
         currentTime = time.time()
-        if (currentTime - streamStart >= (partTime + 30)):
+        if (currentTime - streamStart >= 900):
             recorderProcess.terminate()
             recorderProcess.wait()
-            print("[MAIN - ERROR] Process timed out.")
+            print("[MAIN - OK] Stream restarting.")
+            break
+
+        if (recorderProcess.poll() != None):
+            recorderProcess.terminate()
+            recorderProcess.wait()
+            print("[MAIN - ERROR] Process died.")
             time.sleep(1)
             break
 
@@ -94,14 +87,15 @@ while True:
         except FileNotFoundError:
             continue
 
-        if (recorderProcess.poll() != None):
-            print("[MAIN - INFO] Process exited with " + str(currentFileLength) + " bytes.")
-            recorderProcess.wait()
-            time.sleep(0.5)
-            sendNewFrames(lastFileLength,currentFileLength)
-            break
+        if (currentFileLength > lastFileLength):
+            currentFile = open(tempPath,"rb")
+            currentFile.seek(lastFileLength)
+            newData = currentFile.read(currentFileLength - lastFileLength)
+            currentFile.close()
 
-        lastFileLength = sendNewFrames(lastFileLength,currentFileLength)
+            survpiprotocol.send(masterSocket,"f",newData)
+
+            lastFileLength = currentFileLength
 
         time.sleep(0.2)
 

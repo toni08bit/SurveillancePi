@@ -19,7 +19,7 @@ apt install git -y
 apt install ufw -y
 
 echo "Installing required packages."
-apt install python3-venv libcamera-apps -y
+apt install python3-venv -y
 
 echo "Cloning camera directory."
 git clone --depth 1 --filter=blob:none --sparse https://github.com/BillPlayzToday/SurveillancePi

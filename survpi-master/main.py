@@ -58,7 +58,7 @@ def workConnections():
             while True:
                 if ((connectedClient.pendingDataFile != None) and (not getFilePath(connectedClient.pendingDataFile)[0])):
                     break
-                connectedClient.pendingDataFile = str(uuid.uuid4()) + ".mp4"
+                connectedClient.pendingDataFile = str(uuid.uuid4()) + ".h264"
             print(f"[{connectedClient.address[0]}] (Re)set.")
         elif (receivedData[1] == 2):
             if (connectedClient.pendingDataFile == None):
@@ -82,8 +82,8 @@ def workConnections():
             if (not pathResult):
                 print(f"[{connectedClient.address[0]}] No file path.")
                 continue
-
             dataFileSize = os.stat(pathResult).st_size
+            
             openFile = open(dataCsvFile,"a")
             openFile.write(f"{connectedClient.pendingDataFile},{connectedClient.address[0]}:{str(connectedClient.address[1])},{str(round(connectedClient.lastReset))},{str(round(time.time()))},{str(dataFileSize)}\n")
             openFile.flush()
