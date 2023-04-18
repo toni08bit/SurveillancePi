@@ -301,8 +301,10 @@ def manageDiskUsage():
         _,_,freeSpace = shutil.disk_usage("/media")
         if (freeSpace > configData.get("diskMinFree")):
             break
+        
+        oldestFile = getOldestFile() # TODO properly find file
 
-        os.remove(getOldestFile())
+        os.remove(oldestFile)
 
 
 if (__name__ == "__main__"):
