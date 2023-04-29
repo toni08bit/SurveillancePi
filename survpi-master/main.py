@@ -1,4 +1,5 @@
 import socket
+import sys
 import json
 import multiprocessing
 import subprocess
@@ -290,6 +291,8 @@ def getOldestFile():
         lineValue = dataCsv[lineIndex]
         if ((lowestStartIndex == None) or (lineValue[2] < dataCsv[lowestStartIndex][2])):
             lowestStartIndex = lineIndex
+    if (not lowestStartIndex):
+        return None
     return dataCsv[lowestStartIndex][0]
 
 def manageDiskUsage():
@@ -302,8 +305,10 @@ def manageDiskUsage():
         if (freeSpace > configData.get("diskMinFree")):
             break
         
-        oldestFile = getOldestFile() # TODO properly find file
-
+        oldestFile = getOldestFile()
+        if (not oldestFile):
+            print("[MAIN - FATAL ERROR] Space cannot be managed! No entries to delete are available!")
+            sys.exit()
         os.remove(oldestFile)
 
 
