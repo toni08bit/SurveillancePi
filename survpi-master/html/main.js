@@ -62,6 +62,9 @@ function onInit() {
                             "/job",
                             {
                                 "method": "POST",
+                                "headers": {
+                                    "Content-Type": "application/json"
+                                },
                                 "body": JSON.stringify({
                                     "name": "pack",
                                     "start": (startDate.valueOf() / 1000),
@@ -180,7 +183,7 @@ function loadCameras(dataJson) {
 }
 
 function createResponseItem(responseObject) {
-    // TODO
+    console.log(responseObject) // TODO
 }
 
 function loadResponses(dataJson) {

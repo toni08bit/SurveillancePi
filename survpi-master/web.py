@@ -60,7 +60,9 @@ def _setJobsJson(jobsObject):
 def _addJob(jobObject):
     jobObject["id"] = str(uuid.uuid4())
     currentJobData = _getJobsJson()
-    currentJobData.append(base64.b64encode(json.dumps(jobObject)))
+    if (currentJobData == {}):
+        currentJobData = []
+    currentJobData.append(base64.b64encode(bytes(json.dumps(jobObject),"utf-8")).decode("utf-8"))
     _setJobsJson(currentJobData)
     return jobObject["id"]
 

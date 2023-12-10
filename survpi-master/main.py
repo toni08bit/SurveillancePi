@@ -135,10 +135,11 @@ def readJobsJson():
     openFileWrite.write("{}")
     openFileWrite.close()
 
-def addJobResponse(jobObject):
+def addJobResponse(jobObject,queue):
     if (not jobObject.get("expiresAt")):
         jobObject["expiresAt"] = time.time() + 900
-    processData["jobResponse"].append(jobObject)
+    #processData["jobResponse"].append(jobObject)
+    queue.put(jobObject)
 
 def getJobResponse():
     newJobResponse = []
@@ -152,6 +153,7 @@ def runJob(jobData):
     jobObject = json.loads(base64.b64decode(jobData).decode("utf-8"))
     jobName = jobObject.get("name")
     jobId = jobObject.get("id")
+    
     if (jobName == "reboot"):
         os.system("reboot now")
     elif (jobName == "config"):
@@ -181,6 +183,7 @@ def runJob(jobData):
         zipBytes = open(zipPath,"ab")
         newZip = zipfile.ZipFile(zipBytes,"w",zipfile.ZIP_STORED)
         for includedFile in includedFiles:
+            print("[INFO] Packing file " + includedFile[0] + "...")
             getFileResult = getFilePath(includedFile[0])[0]
             if (not getFileResult):
                 print("[WARN] File " + includedFile[0] + " requested, but not available! Skipping...")
